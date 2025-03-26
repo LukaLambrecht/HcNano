@@ -41,6 +41,7 @@ if __name__=='__main__':
     conditions = '133X_mcRun3_2022_realistic_postEE_ForNanov13_v1'
     era = 'Run3'
     dtype = 'mc'
+    no_exec = False
 
     # parse input file
     if inputfile.startswith('root://'): pass
@@ -57,7 +58,8 @@ if __name__=='__main__':
 
     # make the cmsDriver command
     cmd = make_cmsdriver_command(inputfile, nentries=nentries, outputfile=outputfile,
-            conditions=conditions, era=era, dtype=dtype)
+            conditions=conditions, era=era, dtype=dtype,
+            no_exec=no_exec)
 
     # run the cmsDriver command
     os.system(cmd)

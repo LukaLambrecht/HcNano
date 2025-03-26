@@ -91,4 +91,32 @@ def hcnano_customize(process):
     add_dzero_gen_producer(process)
     add_cfragmentation_producer(process)
 
+    # remove unneeded output
+    # note: can give errors if the main table for a given object is dropped
+    #       while keeping one or more extension tables for that object!
+    #       it is currently not clear how to get a list of all main tables
+    #       with their corresponding extension tables,
+    #       just try to deduce it from the central NanoAOD config files.
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_HTXSCategoryTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_beamSpotTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_boostedTau*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_fatJet*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_customFatJetExtTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_finalJetsAK8ConstituentsTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_subJet*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_subjet*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_btvSubJetMCExtTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_customSubJetsExtTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genJet*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genProtonTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_subGenJet*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genSubJet*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genVisTauTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_isoTrackTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_lheInfoTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_lowPtElectron*_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_rhoTable_*_*")
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_softActivityJet*_*_*")    
+    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_tau*_*_*")
+
     return process
