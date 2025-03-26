@@ -19,7 +19,7 @@ echo "Current CMSSW_BASE: $CMSSW_BASE"
 # git clone this repository
 echo "Cloning the $REPO_NAME repository..."
 git cms-init
-git clone https://github.com/$GIT_USER/$REPO_NAME PhysicsTools/$REPO_NAME
+git clone https://github.com/$GIT_USER/$REPO_NAME PhysicsTools/
 
 # compile and move into package
 echo "Compiling..."
