@@ -1,0 +1,28 @@
+<use name="FWCore/Framework"/>
+<library file="*.cc" name="PhysicsToolsHcNanoPlugins">
+  <use name="FWCore/ParameterSet"/>
+  <use name="FWCore/PluginManager"/>
+  <use name="FWCore/ServiceRegistry"/>
+  <use name="CommonTools/Utils"/>
+  <use name="CommonTools/UtilAlgos"/>
+  <use name="DataFormats/HLTReco"/>
+  <use name="DataFormats/JetReco"/>
+  <use name="DataFormats/TrackReco"/>
+  <use name="DataFormats/VertexReco"/>
+  <use name="DataFormats/PatCandidates"/>
+  <use name="DataFormats/HepMCCandidate"/>
+  <use name="DataFormats/Common"/>
+  <use name="DataFormats/Math"/>
+  <use name="DataFormats/NanoAOD"/>
+  <use name="PhysicsTools/UtilAlgos"/>
+  <use name="PhysicsTools/RecoUtils"/>
+  <use name="PhysicsTools/PatAlgos"/>
+  <use name="PhysicsTools/PatUtils"/>
+  <use name="MagneticField/ParametrizedEngine"/>
+  <use name="TrackingTools/TransientTrack"/>
+  <use name="TrackingTools/Records"/>
+  <use name="RecoVertex/VertexPrimitives"/>
+  <use name="RecoVertex/KalmanVertexFit"/>
+  <use name="RecoVertex/VertexTools"/>
+  <flags EDM_PLUGIN="1"/>
+</library>

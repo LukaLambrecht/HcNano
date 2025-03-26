@@ -1,0 +1,6 @@
+# ignore ROOT files
+**.root
+
+# ignore compiled python
+**.pyc
+**__pycache*
