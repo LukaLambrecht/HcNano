@@ -1,65 +1,55 @@
-# General command from here:
-# https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Instructions/Private%20production
-# Era from here:
-# https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12
-# GT not mentioned on the page above...
-# instead take it from the HPlusCharm_4FS sample on DAS
-# Customization from here:
-# https://github.com/hqucms/NanoTuples/tree/production/master
-
 import os
 import sys
+import argparse
 
-def make_cmsdriver_command(inputfile,
-        nentries = -1,
-        outputfile = 'output.root',
-        conditions = None,
-        era = None,
-        dtype = None,
-        no_exec = False):
-    # make the cmsDriver command
-    cmd = 'cmsDriver.py config --step NANO'
-    if dtype is not None: cmd += f' --{dtype}'
-    if conditions is not None: cmd += f' --conditions {conditions}'
-    if era is not None: cmd += f' --era {era}'
-    cmd += ' --eventcontent NANOAODSIM --datatier NANOAODSIM'
-    if no_exec: cmd += ' --no_exec'
-    cmd += ' --customise PhysicsTools/HcNano/hcnano_cff.hcnano_customize'
-    cmd += f' --filein {inputfile}'
-    cmd += f' --fileout {outputfile}'
-    cmd += f' -n {nentries}'
-    return cmd
+thisdir = os.path.dirname(os.path.abspath(__file__))
+topdir = os.path.abspath(os.path.join(thisdir, '../'))
+sys.path.append(topdir)
+
+from run.cmsdriver.cmsdriver import make_nano_cmsdriver
+from run.globaltags.globaltag import get_globaltag
+
 
 if __name__=='__main__':
 
-    # read command line args
-    inputfile = sys.argv[1]
-    nentries = sys.argv[2]
-    outputfile = sys.argv[3]
-
-    # other arguments (hard-coded for now)
-    conditions = '133X_mcRun3_2022_realistic_postEE_ForNanov13_v1'
-    era = 'Run3'
-    dtype = 'mc'
-    no_exec = False
+    # read command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--inputfile', required=True)
+    parser.add_argument('-n', '--nentries', default=-1, type=int)
+    parser.add_argument('-o', '--outputfile', default='output.root')
+    parser.add_argument('-c', '--configname', default='config')
+    parser.add_argument('--dtype', default=None)
+    parser.add_argument('--era', default=None)
+    parser.add_argument('--globaltag', default=None)
+    parser.add_argument('--year', default=None)
+    parser.add_argument('--no_exec', default=False, action='store_true')
+    args = parser.parse_args()
 
     # parse input file
-    if inputfile.startswith('root://'): pass
-    elif inputfile.startswith('/store/'):
-        inputfile = f'root://cms-xrd-global.cern.ch//{inputfile}'
+    if args.inputfile.startswith('root://'):
+        inputfile = args.inputfile
+    elif args.inputfile.startswith('/store/'):
+        inputfile = f'root://cms-xrd-global.cern.ch//{args.inputfile}'
     else:
-        inputfile = os.path.abspath(inputfile)
+        inputfile = os.path.abspath(args.inputfile)
         inputfile = f'file:{inputfile}'
     print(f'Using parsed input file name: {inputfile}')
 
-    # parse number of entries to process
-    # (note: use -1 to process all events in the input file)
-    nentries = int(nentries)
+    # parse global tag
+    if args.globaltag is not None and args.globaltag.endswith('.json'):
+        if args.year is None:
+            msg = 'Passing a json file for the global tag requires specifying the year.'
+            raise Exception(msg)
+        globaltag = get_globaltag(args.globaltag, args.year)
+    else: globaltag = args.globaltag
+    print(f'Using global tag: {globaltag}')
 
     # make the cmsDriver command
-    cmd = make_cmsdriver_command(inputfile, nentries=nentries, outputfile=outputfile,
-            conditions=conditions, era=era, dtype=dtype,
-            no_exec=no_exec)
+    cmd = make_nano_cmsdriver(inputfile,
+            configname=args.configname,
+            nentries=args.nentries, outputfile=args.outputfile,
+            conditions=globaltag, era=args.era, dtype=args.dtype,
+            no_exec=args.no_exec)
 
     # run the cmsDriver command
     os.system(cmd)
