@@ -82,7 +82,7 @@ if __name__=='__main__':
             # set config file
             # todo: find cleaner solution, e.g. re-use the same config file for all jobs
             # or use a separate working directory for each job.
-            configname = f'temp_config_{didx}_{fidx}'
+            configname = f'cjob_config_{didx}_{fidx}'
         
             # make the command
             cmd = f'python3 cmsrun.py'
@@ -102,9 +102,9 @@ if __name__=='__main__':
             os.makedirs(outputdirs[dataset])
 
     # submit the commands
-    for cmd in cmds: os.system(cmd)
-    #name = 'cjob_cmsrun'
-    #ct.submitCommandsAsCondorCluster(name, cmds,
-    #    proxy=proxy,
-    #    cmssw_version=cmssw_version,
-    #    jobflavour='workday')
+    #for cmd in cmds: os.system(cmd)
+    name = 'cjob_cmsrun'
+    ct.submitCommandsAsCondorCluster(name, cmds,
+        proxy=proxy,
+        cmssw_version=cmssw_version,
+        jobflavour='workday')
