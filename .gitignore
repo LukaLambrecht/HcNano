@@ -4,3 +4,15 @@
 # ignore compiled python
 **.pyc
 **__pycache*
+
+# ignore proxys
+**x509up_*
+
+# ignore condor job files
+**cjob_*
+
+# ignore crab logs
+**crab_logs
+
+# ignore auto-generated config file for CRAB
+HcNano/crab/cmsrun_config.py
