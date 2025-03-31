@@ -21,3 +21,7 @@ HcNano/crab/cmsrun_config.py
 # ignore crab monitoring output
 HcNano/crab/monitoring/*.txt
 HcNano/crab/monitoring/monitor_crab_jobs
+
+# ignore output
+**output_*
+**.png

@@ -1,0 +1,18 @@
+[
+{
+  "name": "nDsMeson",
+  "variable": "nDsMeson",
+  "axtitle": "Number of reconstructed Ds mesons per event",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 15.5,
+  "nbins": 16
+},
+{
+  "name": "nDStarMeson",
+  "variable": "nDStarMeson",
+  "axtitle": "Number of reconstructed D* mesons per event",
+  "unit": "",
+  "bins": [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5]
+}
+]

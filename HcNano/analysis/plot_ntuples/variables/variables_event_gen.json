@@ -1,0 +1,47 @@
+[
+{
+  "name": "GenDsMesonDecayType",
+  "variable": "GenDsMesonDecayType",
+  "axtitle": "Gen-level Ds meson decay type",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 10.5,
+  "nbins": 11
+},
+{
+  "name": "nGenDsMeson",
+  "variable": "nGenDsMeson",
+  "axtitle": "Number of gen-level Ds -> K K pi per event",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 2.5,
+  "nbins": 3
+},
+{ 
+  "name": "GenDZeroMesonDecayType",
+  "variable": "GenDZeroMesonDecayType",
+  "axtitle": "Gen-level D0 meson decay type",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 10.5,
+  "nbins": 11
+},
+{ 
+  "name": "GenDStarMesonDecayType",
+  "variable": "GenDStarMesonDecayType",
+  "axtitle": "Gen-level D* meson decay type",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 10.5,
+  "nbins": 11
+},
+{
+  "name": "nGenDStarMeson",
+  "variable": "nGenDStarMeson",
+  "axtitle": "Number of gen-level D* -> K pi pi per event",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 3.5,
+  "nbins": 4
+}
+]

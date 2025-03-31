@@ -1,0 +1,29 @@
+[
+{
+  "name": "DStarMeson_mass",
+  "variable": "DStarMeson_mass",
+  "axtitle": "Reconstructed $m(D*)$",
+  "unit": "GeV",
+  "xlow": 1.97,
+  "xhigh": 2.07,
+  "nbins": 50
+},
+{
+  "name": "DStarMeson_DZeroMeson_mass",
+  "variable": "DStarMeson_DZeroMeson_mass",
+  "axtitle": "Reconstructed $m(D^{0})$",
+  "unit": "GeV",
+  "xlow": 1.83,
+  "xhigh": 1.9,
+  "nbins": 50
+},
+{
+  "name": "DStarMeson_DZeroMeson_massDiff",
+  "variable": "DStarMeson_DZeroMeson_massDiff",
+  "axtitle": "Reconstructed $m(D*)$ - $m(D^{0})$",
+  "unit": "GeV",
+  "xlow": 0.14,
+  "xhigh": 0.24,
+  "nbins": 50
+}
+]
