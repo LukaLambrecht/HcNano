@@ -78,8 +78,13 @@ Known issues and things to do:
 - Find correct global tag to use for different eras of interest.
 
 ### References
-- General NanoAOD documentation [here](https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12).
+- Technical NanoAOD documentation [here](https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12).
   - Especially instructions for [v12](https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12).
   - And instructions for [private production](https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Instructions/Private%20production).
 - Another example of custom NanoAOD [here](https://github.com/hqucms/NanoTuples/tree/production/master).
-- Earlier standalone analyzer [here](https://github.com/LukaLambrecht/HcAnalysis)
+- Earlier standalone analyzer [here](https://github.com/LukaLambrecht/HcAnalysis).
+
+For further analysis starting from NanoAOD files, see the following (just a few examples):
+- General NanoAOD documentation on [this twiki page](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookNanoAOD) and in [this tutorial](https://opendata.cern.ch/docs/cms-getting-started-nanoaod).
+- Uproot documentation [here](https://uproot.readthedocs.io/en/latest/basic.html).
+- Coffea tutorial [here](https://github.com/CoffeaTeam/coffea-casa-tutorials/blob/master/analyses/thq/analysis_tutorial.ipynb).
