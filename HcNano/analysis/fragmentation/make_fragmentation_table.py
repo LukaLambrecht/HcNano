@@ -24,8 +24,8 @@ if __name__=='__main__':
 
     # set branches to read
     fragmentation_branches = [
-      'cFragmentationPdgId',
-      'cBarFragmentationPdgId'
+      'cFragmentation_c',
+      'cFragmentation_cbar'
     ]
     branches_to_read = fragmentation_branches[:]
     if args.weighted:
@@ -33,11 +33,12 @@ if __name__=='__main__':
 
     # read the input file
     events = {}
-    treename = 'analyzer/Events'
+    treename = 'Events'
     dummykey = 'all'
     sampledict = {dummykey: [args.inputfile]}
     print('Reading ntuple...')
     events = read_sampledict(sampledict,
+                          mode='uproot',
                           treename=treename,
                           branches=branches_to_read,
                           entry_start=args.entry_start,
