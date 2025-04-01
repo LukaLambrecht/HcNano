@@ -76,6 +76,11 @@ if __name__=='__main__':
         events = {}
         events['notmatched'] = events_notmatched
         events['matched'] = events_matched
+        
+        # Print the counts
+        print(f"Total events: {len(events_matched) + len(events_notmatched)}")
+        print(f"Matched events: {len(events_matched)}")
+        print(f"Not matched events: {len(events_notmatched)}")
 
     # set colors
     colordict = {
