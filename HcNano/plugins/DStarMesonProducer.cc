@@ -188,7 +188,10 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
             const reco::Track tr3 = selectedTracks.at(k);
 
             // candidates must point approximately in the same direction
-            if( reco::deltaR(tr3, dzeroP4) > 0.4 ) continue;
+            if( reco::deltaR(tr3, dzeroP4) > 0.1 ) continue;
+	    
+	    // candidates must have pT greater certain value
+	    if( tr3.pt() < 0.5 ) continue;
 
             // reference point of third track must be close to phi vertex
             const math::XYZPoint tr3refpoint = tr3.referencePoint();
