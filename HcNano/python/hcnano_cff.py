@@ -107,7 +107,6 @@ def hcnano_customize(process):
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_subjet*_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_btvSubJetMCExtTable_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_customSubJetsExtTable_*_*")
-    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genJet*_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genProtonTable_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_subGenJet*_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_genSubJet*_*_*")
@@ -115,7 +114,6 @@ def hcnano_customize(process):
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_isoTrackTable_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_lheInfoTable_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_lowPtElectron*_*_*")
-    process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_rhoTable_*_*")
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_softActivityJet*_*_*")    
     process.NANOAODSIMoutput.outputCommands.append("drop nanoaodFlatTable_tau*_*_*")
 
