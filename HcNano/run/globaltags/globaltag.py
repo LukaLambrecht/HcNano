@@ -24,4 +24,6 @@ def get_globaltag(gtfile, year):
         gtdict = json.load(f)
     
     # get requested year
-    return gtdict[year]["gt"]
+    globaltag = gtdict[year].get("conditions", None)
+    era = gtdict[year].get("era", None)
+    return {'globaltag': globaltag, 'era': era}

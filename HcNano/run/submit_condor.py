@@ -9,6 +9,7 @@ sys.path.append(topdir)
 
 import run.tools.condortools as ct
 from run.tools.datasettools import get_files
+from run.tools.samplelisttools import read_samplelists
 
 
 if __name__=='__main__':
@@ -44,13 +45,7 @@ if __name__=='__main__':
         print(f'  - {proxy}')
 
     # read samplelists
-    datasets = []
-    for samplelist in args.samplelist:
-        with open(samplelist, 'r') as f:
-            samples = [l.strip('\n') for l in f.readlines()]
-            datasets += samples
-    print(f'Read following datasets from provided samplelist ({len(datasets)}):')
-    for d in datasets: print(f'  - {d}')
+    datasets = read_samplelists(args.samplelist, verbose=True)
 
     # get input files
     inputfiles = {}

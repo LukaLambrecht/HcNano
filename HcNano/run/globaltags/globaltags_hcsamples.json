@@ -1,18 +1,18 @@
 {
   "2022-preEE": {
     "meta": "https://cmsweb.cern.ch/das/request?instance=prod/global&input=config+dataset%3D%2FHPlusCharm_3FS_MuRFScaleDynX0p50_HTo2G_M-125_TuneCP5_13p6TeV_amcatnlo-pythia8%2FRun3Summer22MiniAODv4-130X_mcRun3_2022_realistic_v5-v2%2FMINIAODSIM",
-    "gt": "133X_mcRun3_2022_realistic_ForNanov13_v1"
+    "conditions": "133X_mcRun3_2022_realistic_ForNanov13_v1"
   },
   "2022-postEE": {
     "meta": "https://cmsweb.cern.ch/das/request?instance=prod/global&input=config+dataset%3D%2FHPlusCharm_3FS_MuRFScaleDynX0p50_HTo2G_M-125_TuneCP5_13p6TeV_amcatnlo-pythia8%2FRun3Summer22EEMiniAODv4-130X_mcRun3_2022_realistic_postEE_v6-v2%2FMINIAODSIM",
-    "gt": "133X_mcRun3_2022_realistic_postEE_ForNanov13_v1"
+    "conditions": "133X_mcRun3_2022_realistic_postEE_ForNanov13_v1"
   },
   "2023-preBPIX": {
     "meta": "https://cmsweb.cern.ch/das/request?instance=prod/global&input=config+dataset%3D%2FHPlusCharm_3FS_MuRFScaleDynX0p50_HTo2G_M-125_TuneCP5_13p6TeV_amcatnlo-pythia8%2FRun3Summer23MiniAODv4-130X_mcRun3_2023_realistic_v15-v2%2FMINIAODSIM",
-    "gt": "133X_mcRun3_2023_realistic_ForNanov13_v1"
+    "conditions": "133X_mcRun3_2023_realistic_ForNanov13_v1"
   },
   "2023-postBPIX": {
     "meta": "https://cmsweb.cern.ch/das/request?instance=prod/global&input=config+dataset%3D%2FHPlusCharm_3FS_MuRFScaleDynX0p50_HTo2G_M-125_TuneCP5_13p6TeV_amcatnlo-pythia8%2FRun3Summer23BPixMiniAODv4-130X_mcRun3_2023_realistic_postBPix_v6-v2%2FMINIAODSIM",
-    "gt": "133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2"
+    "conditions": "133X_mcRun3_2023_realistic_postBPix_ForNanov13_v2"
   }
 }

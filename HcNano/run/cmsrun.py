@@ -40,15 +40,24 @@ if __name__=='__main__':
         if args.year is None:
             msg = 'Passing a json file for the global tag requires specifying the year.'
             raise Exception(msg)
-        globaltag = get_globaltag(args.globaltag, args.year)
+        globaltag = get_globaltag(args.globaltag, args.year)['globaltag']
     else: globaltag = args.globaltag
     print(f'Using global tag: {globaltag}')
+
+    # parse era
+    if args.era is not None and args.era.endswith('.json'):
+        if args.year is None:
+            msg = 'Passing a json file for the era requires specifying the year.'
+            raise Exception(msg)
+        era = get_globaltag(args.era, args.year)['era']
+    else: era = args.era
+    print(f'Using era: {era}')
 
     # make the cmsDriver command
     cmd = make_nano_cmsdriver(inputfile,
             configname=args.configname,
             nentries=args.nentries, outputfile=args.outputfile,
-            conditions=globaltag, era=args.era, dtype=args.dtype,
+            conditions=globaltag, era=era, dtype=args.dtype,
             no_exec=args.no_exec)
 
     # run the cmsDriver command

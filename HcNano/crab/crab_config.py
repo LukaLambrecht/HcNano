@@ -13,8 +13,9 @@ dataset = os.environ['CRAB_DATASET']
 sample_short = '_'.join(sample.split('_')[:2])
 version_short = '_'.join(version.split('_')[:1])
 # (first value is just an empty string because dataset starts with /)
-unitsPerJob = int(os.environ['CRAB_UNITSPERJOB'])
-entriesPerUnit = int(os.environ['CRAB_ENTRIESPERUNIT'])
+unitsPerJob = int(os.environ['CRAB_UNITSPERJOB']) # (usually number of files per job)
+entriesPerUnit = int(os.environ['CRAB_ENTRIESPERUNIT']) # (usually number of events per file)
+totalUnits = int(os.environ['CRAB_TOTALUNITS']) # (usually number of files to process)
 outputdir = os.environ['CRAB_OUTPUTDIR']
 psetName = os.environ['CRAB_PSETNAME']
 test = os.environ['CRAB_TEST']
@@ -40,6 +41,7 @@ print(f'  - psetName: {psetName}')
 print(f'  - outLFNDirBase: {outLFNDirBase}')
 print(f'  - unitsPerJob: {unitsPerJob}')
 print(f'  - entriesPerUnit: {entriesPerUnit}')
+print(f'  - totalUnits: {totalUnits}')
 
 # in case of testing, exit here
 if test:
@@ -64,6 +66,8 @@ config.Data.inputDataset = dataset
 config.Data.splitting = "FileBased"
 # set the number of units (usually files) per job
 config.Data.unitsPerJob = unitsPerJob
+# set the total number of units (usually files) per job
+config.Data.totalUnits = totalUnits
 # set the output directory
 # note that /store/user/<username> is automatically translated by CRAB
 # to a physical file location, depending on the storage site.

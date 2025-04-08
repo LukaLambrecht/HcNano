@@ -123,8 +123,8 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         // candidates must point approximately in the same direction
         if( reco::deltaR(tr1, tr2) > 0.27 ) continue;
 	
-	// candidates must have pT greater than certain value
-	if(tr1.pt() < 0.6 or tr2.pt() < 0.6) continue;
+        // candidates must have pT greater than certain value
+        if(tr1.pt() < 0.6 or tr2.pt() < 0.6) continue;
 
         // reference points of both tracks must be close together
         const math::XYZPoint tr1refpoint = tr1.referencePoint();
