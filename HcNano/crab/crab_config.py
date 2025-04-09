@@ -2,9 +2,15 @@
 
 # More info: https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
 
+# imports
+import CRABClient
 import os
 import sys
 
+# note: need to import CRABClient first in order to run this locally
+#       (with python3 crab_config.py instead of crab submit crab_config.py)
+#       for testing purposes (only printouts; does not actually run something).
+#       see here: https://twiki.cern.ch/twiki/bin/view/CMSPublic/CMSCrabClient#Using_CRABClient_API
 
 # get modifiable parameters from the environment
 # (set by the submit script)
@@ -12,61 +18,58 @@ dataset = os.environ['CRAB_DATASET']
 (_, sample, version, tier) = dataset.split('/')
 sample_short = '_'.join(sample.split('_')[:2])
 version_short = '_'.join(version.split('_')[:1])
-# (first value is just an empty string because dataset starts with /)
-unitsPerJob = int(os.environ['CRAB_UNITSPERJOB']) # (usually number of files per job)
-entriesPerUnit = int(os.environ['CRAB_ENTRIESPERUNIT']) # (usually number of events per file)
-totalUnits = int(os.environ['CRAB_TOTALUNITS']) # (usually number of files to process)
 outputdir = os.environ['CRAB_OUTPUTDIR']
 psetName = os.environ['CRAB_PSETNAME']
-test = os.environ['CRAB_TEST']
-test = (test=='True' or test=='true')
+splitting = os.environ['CRAB_SPLITTING']
+unitsPerJob = int(os.environ['CRAB_UNITSPERJOB'])
+totalUnits = int(os.environ['CRAB_TOTALUNITS'])
 
-# define a name and a workarea for this CRAB workflow
+# define a name for this CRAB workflow
+# (used for CRAB internal bookkeeping)
 requestName = sample_short + '_' + version_short
+
+# define a work area for this CRAB workflow
+# (where the log files will appear)
+# note: the requestName is automatically appended.
 workArea = os.path.join(os.environ['CMSSW_BASE'],
              'src/PhysicsTools/HcNano/crab/crab_logs',
              sample, version)
 
 # define an output directory
 # note: the first part should always be /store/user/<username>
+# note: sample and requestName are automatically appended.
 outLFNDirBase = '/store/user/' + os.environ['USER']
-outLFNDirBase = os.path.join(outLFNDirBase, outputdir)
+outLFNDirBase = os.path.join(outLFNDirBase, outputdir, sample, version)
 
 # printouts for checking
 print('Building CRAB config with following parameters:')
 print(f'  - dataset: {dataset}')
 print(f'  - requestName: {requestName}')
 print(f'  - workArea: {workArea}')
-print(f'  - psetName: {psetName}')
 print(f'  - outLFNDirBase: {outLFNDirBase}')
+print(f'  - psetName: {psetName}')
+print(f'  - splitting: {splitting}')
 print(f'  - unitsPerJob: {unitsPerJob}')
-print(f'  - entriesPerUnit: {entriesPerUnit}')
 print(f'  - totalUnits: {totalUnits}')
-
-# in case of testing, exit here
-if test:
-    print('Parameter "test" was set to True, so exiting here.')
-    sys.exit()
 
 # set CRAB config
 from CRABClient.UserUtilities import config
 
 config = config()
 
-# set the CRAB working directory (where log files will appear)
+# set the CRAB working directory and workflow name
 config.General.workArea = workArea
-# set the folder within the CRAB working directory for a specific submission
 config.General.requestName = requestName
 config.General.transferOutputs = True
 config.General.transferLogs = False
 
 # set input dataset
 config.Data.inputDataset = dataset
-# set splitting
-config.Data.splitting = "FileBased"
-# set the number of units (usually files) per job
+# set splitting parameters
+# see here for more info:
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+config.Data.splitting = splitting
 config.Data.unitsPerJob = unitsPerJob
-# set the total number of units (usually files) per job
 config.Data.totalUnits = totalUnits
 # set the output directory
 # note that /store/user/<username> is automatically translated by CRAB
@@ -78,12 +81,11 @@ config.Data.publication = False
 
 # set the plugin name (do not change, only "Analysis" is allowed for this type of job)
 config.JobType.pluginName = "Analysis"
-# set the config file and its arguments
+# set the config file
 config.JobType.psetName = psetName
-config.JobType.pyCfgParams = [f'{entriesPerUnit}']
 # set the requested time limit and memory limit
 config.JobType.maxJobRuntimeMin = 1315
-config.JobType.maxMemoryMB = 3500
+config.JobType.maxMemoryMB = 2500
 # set the number of requested cores
 config.JobType.numCores = 1
 

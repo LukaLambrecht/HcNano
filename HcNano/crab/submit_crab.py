@@ -18,11 +18,14 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--samplelist', required=True, nargs='+')
     parser.add_argument('-o', '--outputdirname', required=True)
-    parser.add_argument('--nentries', default=-1, type=int,
-      help='Number of entries to analyze per file')
-    parser.add_argument('--nfiles', default=-1, type=int,
-      help='Number of files to analyze')
-    parser.add_argument('--dtype', default=None)
+    parser.add_argument('--splitting', default='FileBased',
+      choices = ['Automatic', 'FileBased', 'LumiBased', 'EventAwareLumiBased'],
+      help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
+    parser.add_argument('--units_per_job', default=1, type=int,
+      help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
+    parser.add_argument('--total_units', default=1, type=int,
+      help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
+    parser.add_argument('--dtype', default=None, choices=[None, 'mc', 'data'])
     parser.add_argument('--era', default=None)
     parser.add_argument('--globaltag', default=None)
     parser.add_argument('--year', default=None)
@@ -72,10 +75,9 @@ if __name__=='__main__':
         os.environ['CRAB_DATASET'] = dataset
         os.environ['CRAB_PSETNAME'] = pset
         os.environ['CRAB_OUTPUTDIR'] = args.outputdirname
-        os.environ['CRAB_UNITSPERJOB'] = '1'
-        os.environ['CRAB_ENTRIESPERUNIT'] = str(args.nentries)
-        os.environ['CRAB_TOTALUNITS'] = str(args.nfiles)
-        os.environ['CRAB_TEST'] = str(args.test)
+        os.environ['CRAB_SPLITTING'] = args.splitting
+        os.environ['CRAB_UNITSPERJOB'] = str(args.units_per_job)
+        os.environ['CRAB_TOTALUNITS'] = str(args.total_units)
 
         # run crab config
         # (only for producing some printouts for testing,
@@ -83,4 +85,7 @@ if __name__=='__main__':
         if args.test: os.system(f'python3 {crab_config}')
 
         # submit
-        else: os.system(f'crab submit -c {crab_config}')
+        else:
+            cmd = f'crab submit -c {crab_config}'
+            print(cmd)
+            os.system(cmd)
