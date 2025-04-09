@@ -66,6 +66,7 @@ class DStarMesonProducer : public edm::stream::EDProducer<> {
 
     // attributes and variables
     const std::string name;
+    const std::string dtype;
     const unsigned int nDStarMeson_max = 30;
 
     // template member functions

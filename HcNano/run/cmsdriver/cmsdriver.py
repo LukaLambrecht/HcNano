@@ -16,19 +16,29 @@ def make_nano_cmsdriver(inputfile,
         dtype = None,
         no_exec = False):
 
+    # check dtype
+    if dtype is None:
+        msg = 'Argument dtype is required'
+        msg += ' to make the cmsDriver command.'
+        raise Exception(msg)
+    if dtype not in ['mc', 'data']:
+       msg = f'Dtype "{dtype}" not recognized.'
+       raise Exception(msg)
+
     # make the cmsDriver command for standard NanoAOD
     cmd = f'cmsDriver.py {configname} --step NANO'
-    if dtype is not None: cmd += f' --{dtype}'
+    cmd += f' --{dtype}'
     if conditions is not None: cmd += f' --conditions {conditions}'
     if era is not None: cmd += f' --era {era}'
-    cmd += ' --eventcontent NANOAODSIM --datatier NANOAODSIM'
+    if dtype=='mc': cmd += ' --eventcontent NANOAODSIM --datatier NANOAODSIM'
+    else: cmd += ' --eventcontent NANOAOD --datatier NANOAOD'
     if no_exec: cmd += ' --no_exec'
     cmd += f' --filein {inputfile}'
     cmd += f' --fileout {outputfile}'
     cmd += f' -n {nentries}'
     
     # do customization
-    cmd += ' --customise PhysicsTools/HcNano/hcnano_cff.hcnano_customize'
+    cmd += f' --customise PhysicsTools/HcNano/hcnano_cff.hcnano_customize_{dtype}'
 
     # return the cmsDriver command
     return cmd

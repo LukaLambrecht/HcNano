@@ -40,7 +40,7 @@ if __name__=='__main__':
         if args.year is None:
             msg = 'Passing a json file for the global tag requires specifying the year.'
             raise Exception(msg)
-        globaltag = get_globaltag(args.globaltag, args.year)['globaltag']
+        globaltag = get_globaltag(args.globaltag, year=args.year, dtype=args.dtype)['globaltag']
     else: globaltag = args.globaltag
     print(f'Using global tag: {globaltag}')
 
@@ -61,4 +61,5 @@ if __name__=='__main__':
             no_exec=args.no_exec)
 
     # run the cmsDriver command
+    print(cmd)
     os.system(cmd)

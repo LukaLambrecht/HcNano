@@ -66,6 +66,7 @@ class DsMesonProducer : public edm::stream::EDProducer<> {
 
     // attributes and variables
     const std::string name;
+    const std::string dtype;
     const unsigned int nDsMeson_max = 30;
 
     // template member functions

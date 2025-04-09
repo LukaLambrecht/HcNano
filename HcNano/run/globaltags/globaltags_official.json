@@ -1,27 +1,62 @@
 {
   "2018-UL":{
-    "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12",
-    "era": "Run2_2018,run2_nanoAOD_106Xv2",
-    "conditions": "auto:phase1_2018_realistic"
+    "mc": {
+      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12",
+      "era": "Run2_2018,run2_nanoAOD_106Xv2",
+      "conditions": "auto:phase1_2018_realistic"
+    },
+    "data": {
+      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12",
+      "era": "Run2_2018,run2_nanoAOD_106Xv2",
+      "conditions": "auto:phase1_2018_realistic"
+    }
   },
   "2022-preEE": {
-    "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2022_Run3_MC_AN1",
-    "era": "Run3",
-    "conditions": "126X_mcRun3_2022_realistic_v2"
+    "mc": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2022_Run3_MC_AN1",
+      "era": "Run3",
+      "conditions": "126X_mcRun3_2022_realistic_v2"
+    },
+    "data": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_ReReco_of_Run_202",
+      "era": "Run3",
+      "conditions": "140X_dataRun3_v17"
+    }
   },
   "2022-postEE": {
-    "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2022_Run3_MC_prod",
-    "era": "Run3",
-    "conditions": "126X_mcRun3_2022_realistic_postEE_v1"
+    "mc": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2022_Run3_MC_prod",
+      "era": "Run3",
+      "conditions": "126X_mcRun3_2022_realistic_postEE_v1"
+    },
+    "data": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_ReReco_of_Run_202",
+      "era": "Run3",
+      "conditions": "140X_dataRun3_v17"
+    }
   },
   "2023-preBPIX": {
-    "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2023_Run3_MC_prod",
-    "era": "Run3",
-    "conditions": "130X_mcRun3_2023_realistic_v14"
+    "mc": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2023_Run3_MC_prod",
+      "era": "Run3",
+      "conditions": "130X_mcRun3_2023_realistic_v14"
+    },
+    "data": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_ReReco_of_Run_202",
+      "era": "Run3",
+      "conditions": "140X_dataRun3_v17"
+    }
   },
   "2023-postBPIX": {
-    "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2023_Run3_MC_prod",
-    "era": "Run3",
-    "conditions": "130X_mcRun3_2023_realistic_v14"
+    "mc": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_2023_Run3_MC_prod",
+      "era": "Run3",
+      "conditions": "130X_mcRun3_2023_realistic_v14"
+    },
+    "data": {
+      "meta": "https://twiki.cern.ch/twiki/bin/view/CMSPublic/GTsRun3#Global_tag_for_ReReco_of_Run_202",
+      "era": "Run3",
+      "conditions": "140X_dataRun3_v17"
+    }
   }
 }

@@ -11,6 +11,7 @@ Ds -> phi pi -> K K pi
 // constructor //
 DsMesonProducer::DsMesonProducer(const edm::ParameterSet& iConfig)
   : name(iConfig.getParameter<std::string>("name")),
+    dtype(iConfig.getParameter<std::string>("dtype")),
     packedPFCandidatesToken(consumes<std::vector<pat::PackedCandidate>>(
         iConfig.getParameter<edm::InputTag>("packedPFCandidatesToken"))),
     lostTracksToken(consumes<std::vector<pat::PackedCandidate>>(
@@ -28,6 +29,7 @@ DsMesonProducer::~DsMesonProducer(){}
 void DsMesonProducer::fillDescriptions(edm::ConfigurationDescriptions &descriptions){
     edm::ParameterSetDescription desc;
     desc.add<std::string>("name", "Name for output table");
+    desc.add<std::string>("dtype", "Data type (mc or data)");
     desc.add<edm::InputTag>("packedPFCandidatesToken", edm::InputTag("packedPFCandidatesToken"));
     desc.add<edm::InputTag>("lostTracksToken", edm::InputTag("lostTracksToken"));
     desc.add<edm::InputTag>("genParticlesToken", edm::InputTag("genParticlesToken"));
@@ -48,7 +50,7 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<std::vector<reco::GenParticle>> genParticles;
     iEvent.getByToken(genParticlesToken, genParticles);
     std::vector< std::map< std::string, const reco::GenParticle* > > DsGenParticles;
-    bool doMatching = true; // to do: explicitly disable for data
+    bool doMatching = (dtype=="mc") ? true : false;
     if( !genParticles.isValid() ) doMatching = false;
     if( doMatching ){
         DsGenParticles = DsMesonGenProducer::find_Ds_to_PhiPi_to_KKPi( *genParticles );
