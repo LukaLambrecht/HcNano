@@ -20,7 +20,7 @@ if __name__=='__main__':
 
     # read command line args
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--inputfile', required=True)
+    parser.add_argument('-i', '--inputfiles', required=True, nargs='+')
     parser.add_argument('-v', '--variables', required=True)
     parser.add_argument('-o', '--outputdir', required=True)
     parser.add_argument('--genmatchbranch', default=None)
@@ -49,7 +49,7 @@ if __name__=='__main__':
     events = {}
     treename = 'Events'
     dummykey = 'all'
-    sampledict = {dummykey: [args.inputfile]}
+    sampledict = {dummykey: args.inputfiles}
     print('Reading ntuple...')
     events = read_sampledict(sampledict,
                           mode='uproot',

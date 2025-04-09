@@ -1,8 +1,15 @@
 import os
 import sys
+import argparse
 
 
 if __name__=='__main__':
+
+    # read command line args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--inputfiles', required=True, nargs='+')
+    parser.add_argument('-o', '--outputdir', required=True)
+    args = parser.parse_args()
 
     configs = {
       'event': {
@@ -43,18 +50,15 @@ if __name__=='__main__':
       }
     }
 
-    inputfile = sys.argv[1]
-    outputdir = sys.argv[2]
-
     for key, config in configs.items():
 
         variables = config['variables']
         genmatchbranch = config['genmatchbranch']
-        thisoutputdir = os.path.join(outputdir, config['outputdir'])
+        thisoutputdir = os.path.join(args.outputdir, config['outputdir'])
         extrainfo = config['extrainfo']
 
         cmd = 'python3 plot_ntuple.py'
-        cmd += f' -i {inputfile}'
+        cmd += ' -i {}'.format(' '.join(args.inputfiles))
         cmd += f' -v {variables}'
         cmd += f' -o {thisoutputdir}'
         cmd += ' --donormalize --dolog'
