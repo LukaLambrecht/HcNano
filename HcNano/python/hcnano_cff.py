@@ -126,7 +126,7 @@ def hcnano_customize(process, dtype='mc'):
     # set report frequency
     # (as recommended here:
     # https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Instructions/Private%20production)
-    process.MessageLogger.cerr.FwkReport.reportEvery = 1
+    process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
     # toggle summary
     # (ad done e.g. here:
@@ -134,7 +134,7 @@ def hcnano_customize(process, dtype='mc'):
     process.options.wantSummary = cms.untracked.bool(True)
 
     # do event selection to reduce size of output
-    add_nlepton_selector(process, nleptons=0, dtype=dtype)
+    add_nlepton_selector(process, nleptons=4, dtype=dtype)
 
     # add custom producers
     if dtype=='mc':

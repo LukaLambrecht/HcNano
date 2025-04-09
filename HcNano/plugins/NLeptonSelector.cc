@@ -27,9 +27,33 @@ bool NLeptonSelector::filter(edm::Event& iEvent, const edm::EventSetup& iSetup){
     edm::Handle<std::vector<pat::Muon>> muons;
     iEvent.getByToken(muonsToken, muons);
 
-    // do selection
-    int nElectrons = (*electrons).size();
-    int nMuons = (*muons).size();
+    // count electrons passing selection
+    // note: apply loose selection,
+    //       make sure it is nowhere potentially tighter
+    //       than later downstream selections.
+    int nElectrons = 0;
+    for( const pat::Electron& electron : *electrons ){
+        if( electron.pt() < 5 ) continue;
+        if( std::fabs(electron.eta()) > 3 ) continue;
+        if( std::fabs(electron.dB(pat::Electron::PV2D)) > 1 ) continue;
+        if( std::fabs(electron.dB(pat::Electron::PVDZ)) > 2 ) continue;
+        nElectrons++;
+    }
+
+    // count muons passing selection
+    // note: apply loose selection,
+    //       make sure it is nowhere potentially tighter
+    //       than later downstream selections.
+    int nMuons = 0;
+    for( const pat::Muon& muon : *muons ){
+        if( muon.pt() < 3 ) continue;
+        if( std::fabs(muon.eta()) > 3 ) continue;
+        if( std::fabs(muon.dB(pat::Muon::PV2D)) > 1 ) continue;
+        if( std::fabs(muon.dB(pat::Muon::PVDZ)) > 2 ) continue;
+        nMuons++;
+    }
+
+    // do selection on total number of leptons
     int nLeptons = nElectrons + nMuons;
     if( nLeptons < minNLeptons ) return false;
 

@@ -49,7 +49,7 @@ if __name__=='__main__':
         if args.year is None:
             msg = 'Passing a json file for the era requires specifying the year.'
             raise Exception(msg)
-        era = get_globaltag(args.era, args.year)['era']
+        era = get_globaltag(args.era, year=args.year, dtype=args.dtype)['era']
     else: era = args.era
     print(f'Using era: {era}')
 

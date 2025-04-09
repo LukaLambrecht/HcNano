@@ -21,9 +21,9 @@ if __name__=='__main__':
     parser.add_argument('--splitting', default='FileBased',
       choices = ['Automatic', 'FileBased', 'LumiBased', 'EventAwareLumiBased'],
       help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
-    parser.add_argument('--units_per_job', default=1, type=int,
+    parser.add_argument('--units_per_job', default=-1, type=int,
       help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
-    parser.add_argument('--total_units', default=1, type=int,
+    parser.add_argument('--total_units', default=-1, type=int,
       help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
     parser.add_argument('--dtype', default=None, choices=[None, 'mc', 'data'])
     parser.add_argument('--era', default=None)
@@ -40,7 +40,7 @@ if __name__=='__main__':
         if args.year is None:
             msg = 'Passing a json file for the global tag requires specifying the year.'
             raise Exception(msg)
-        globaltag = get_globaltag(args.globaltag, args.year)['globaltag']
+        globaltag = get_globaltag(args.globaltag, year=args.year, dtype=args.dtype)['globaltag']
     else: globaltag = args.globaltag
     print(f'Using global tag: {globaltag}')
 
@@ -49,7 +49,7 @@ if __name__=='__main__':
         if args.year is None:
             msg = 'Passing a json file for the era requires specifying the year.'
             raise Exception(msg)
-        era = get_globaltag(args.era, args.year)['era']
+        era = get_globaltag(args.era, year=args.year, dtype=args.dtype)['era']
     else: era = args.era
     print(f'Using era: {era}')
 

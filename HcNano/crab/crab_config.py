@@ -69,8 +69,8 @@ config.Data.inputDataset = dataset
 # see here for more info:
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
 config.Data.splitting = splitting
-config.Data.unitsPerJob = unitsPerJob
-config.Data.totalUnits = totalUnits
+if unitsPerJob > 0: config.Data.unitsPerJob = unitsPerJob
+if totalUnits > 0: config.Data.totalUnits = totalUnits
 # set the output directory
 # note that /store/user/<username> is automatically translated by CRAB
 # to a physical file location, depending on the storage site.
