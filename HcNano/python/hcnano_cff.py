@@ -2,13 +2,40 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.common_cff import Var
 
 
+def add_nlepton_selector(process, nleptons):
+    process.NLeptonSelector = cms.EDFilter("NLeptonSelector",
+        minNLeptons = cms.int32(nleptons),
+        muonsToken = cms.InputTag("slimmedMuons"),
+        electronsToken = cms.InputTag("slimmedElectrons")
+    )
+    # modify the process.nanoAOD_step to insert the filter
+    # note: this assumes the process.nanoAOD_step was defined in the CMSSW config
+    #       before the customization function.
+    orig_nanoaod_sequence = process.nanoAOD_step._seq
+    process.nanoAOD_step = cms.Path(
+      process.NLeptonSelector
+      * orig_nanoaod_sequence
+    )
+    # also need to modify the output module to store only events
+    # that passed the process.nanoAOD_step (including the filter as above).
+    process.NANOAODSIMoutput.SelectEvents = cms.untracked.PSet(
+      SelectEvents = cms.vstring("nanoAOD_step")
+    )
+    # need to put the genWeightsTable in a separate Path,
+    # else only events passing the filter are contributing
+    # to the genEventSumw and genEventCount branches in the Runs tree.
+    process.genWeightsPath = cms.Path(process.genWeightsTable)
+    process.schedule.append(process.genWeightsPath)
+
 def add_ds_gen_producer(process, name='GenDsMeson'):
     process.DsMesonGenProducer = cms.EDProducer("DsMesonGenProducer",
         name = cms.string(name),
         genParticlesToken = cms.InputTag("prunedGenParticles")
     )
-    process.DsMesonGenTask = cms.Task(process.DsMesonGenProducer)
-    process.schedule.associate(process.DsMesonGenTask)
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.DsMesonGenProducer
+    )
     process.NANOAODSIMoutput.outputCommands.append("keep *_DsMesonGenProducer_*_*")
 
 def add_ds_producer(process, name='DsMeson'):
@@ -18,8 +45,10 @@ def add_ds_producer(process, name='DsMeson'):
         packedPFCandidatesToken = cms.InputTag("packedPFCandidates"),
         lostTracksToken = cms.InputTag("lostTracks")
     )
-    process.DsMesonTask = cms.Task(process.DsMesonProducer)
-    process.schedule.associate(process.DsMesonTask)
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.DsMesonProducer
+    )
     process.NANOAODSIMoutput.outputCommands.append("keep *_DsMesonProducer_*_*")
 
 def add_dstar_gen_producer(process, name='GenDStarMeson'):
@@ -27,8 +56,10 @@ def add_dstar_gen_producer(process, name='GenDStarMeson'):
         name = cms.string(name),
         genParticlesToken = cms.InputTag("prunedGenParticles")
     )
-    process.DStarMesonGenTask = cms.Task(process.DStarMesonGenProducer)
-    process.schedule.associate(process.DStarMesonGenTask)
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.DStarMesonGenProducer
+    )
     process.NANOAODSIMoutput.outputCommands.append("keep *_DStarMesonGenProducer_*_*")
 
 def add_dstar_producer(process, name='DStarMeson'):
@@ -38,8 +69,10 @@ def add_dstar_producer(process, name='DStarMeson'):
         packedPFCandidatesToken = cms.InputTag("packedPFCandidates"),
         lostTracksToken = cms.InputTag("lostTracks")
     )
-    process.DStarMesonTask = cms.Task(process.DStarMesonProducer)
-    process.schedule.associate(process.DStarMesonTask)
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.DStarMesonProducer
+    )
     process.NANOAODSIMoutput.outputCommands.append("keep *_DStarMesonProducer_*_*")
 
 def add_dzero_gen_producer(process, name='GenDZeroMeson'):
@@ -47,8 +80,10 @@ def add_dzero_gen_producer(process, name='GenDZeroMeson'):
         name = cms.string(name),
         genParticlesToken = cms.InputTag("prunedGenParticles")
     )
-    process.DZeroMesonGenTask = cms.Task(process.DZeroMesonGenProducer)
-    process.schedule.associate(process.DZeroMesonGenTask)
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.DZeroMesonGenProducer
+    )
     process.NANOAODSIMoutput.outputCommands.append("keep *_DZeroMesonGenProducer_*_*")
 
 def add_cfragmentation_producer(process, name='cFragmentation'):
@@ -56,8 +91,10 @@ def add_cfragmentation_producer(process, name='cFragmentation'):
         name = cms.string(name),
         genParticlesToken = cms.InputTag("prunedGenParticles")
     )
-    process.cFragmentationTask = cms.Task(process.cFragmentationProducer)
-    process.schedule.associate(process.cFragmentationTask)
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.cFragmentationProducer
+    )
     process.NANOAODSIMoutput.outputCommands.append("keep *_cFragmentationProducer_*_*")
 
 
@@ -82,6 +119,10 @@ def hcnano_customize(process):
     # (ad done e.g. here:
     # https://github.com/hqucms/NanoTuples/tree/production/master)
     process.options.wantSummary = cms.untracked.bool(True)
+
+    # do event selection to reduce size of output
+    # (experimental)
+    add_nlepton_selector(process, 4)
 
     # add custom producers
     add_ds_gen_producer(process)
