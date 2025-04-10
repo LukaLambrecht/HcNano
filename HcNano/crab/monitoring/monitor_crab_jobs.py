@@ -290,27 +290,27 @@ if __name__ == '__main__':
     wdir = os.getcwd()
 
     # find all sample folders
-    fproc = sorted(glob.glob(os.path.join(args.crablogdir,'*/*/*'), recursive=True))
-    nfproc = len(fproc)
-    if nfproc == 0:
+    workdirs = sorted(glob.glob(os.path.join(args.crablogdir,'*/*/*'), recursive=True))
+    nworkdirs = len(workdirs)
+    if nworkdirs == 0:
         msg = 'No samples found in provided simpack dir; exiting.'
         raise Exception(msg)
 
     # only for testing: subselect samples
     if args.test:
-        ntest = min(3, nfproc)
+        ntest = min(3, nworkdirs)
         print('WARNING: running in test mode, will only process'
-             +' {} out of {} samples'.format(ntest, nfproc))
-        fproc = fproc[:ntest]
+             +' {} out of {} samples'.format(ntest, nworkdirs))
+        workdirs = workdirs[:ntest]
 
     # initialize all samples to 0% finished and empty grafana link
-    for fidx, f in enumerate(fproc):
+    for fidx, f in enumerate(workdirs):
         data['samples'][os.path.basename(f)] = {'status': {'finished':'0%'}, 'grafana': ''}
         
     # loop over samples
     tmpfile = 'monitor_tmp_log.txt'
-    for fidx, f in enumerate(fproc):
-        print('Now processing sample {} of {}'.format(fidx+1,len(fproc)))
+    for fidx, f in enumerate(workdirs):
+        print('Now processing sample {} of {}'.format(fidx+1, len(workdirs)))
         print('({})'.format(f))
 
         # delete previously existing log file
@@ -382,10 +382,8 @@ if __name__ == '__main__':
             if args.resubmit:
                 print('Found failed jobs, now resubmitting...')
                 # make crab resubmit command
-                resubmit_cmd = 'cd {}'.format(workdirs[fidx])
-                resubmit_cmd += '; bash {} resubmit'.format(crab_command_script)
+                resubmit_cmd = 'crab resubmit {}'.format(f)
                 if args.resubmit_args is not None: resubmit_cmd += ' {}'.format(args.resubmit_args)
-                resubmit_cmd += ' {}'.format(f)
                 print('Resubmit command: {}'.format(resubmit_cmd))
                 os.system(resubmit_cmd)
                 print('Done')
