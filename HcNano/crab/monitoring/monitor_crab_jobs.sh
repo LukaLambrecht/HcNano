@@ -16,6 +16,6 @@ cp x509up_u116295 /tmp/
 
 # run the monitoring
 python3 monitor_crab_jobs.py \
--i ../run/simpacks/ \
--d /eos/user/l/llambrec/private-sample-production/monitor_crab_jobs/index.html \
-"$@"
+-i ../crab_logs \
+-d /eos/user/l/llambrec/hcanalysis_nanoaod_2018_sim_new/monitor_crab_jobs/index.html \
+-r
