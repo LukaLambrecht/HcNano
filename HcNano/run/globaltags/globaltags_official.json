@@ -1,14 +1,14 @@
 {
   "2018-UL":{
     "mc": {
-      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12",
+      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv9",
       "era": "Run2_2018,run2_nanoAOD_106Xv2",
-      "conditions": "auto:phase1_2018_realistic"
+      "conditions": "106X_upgrade2018_realistic_v16_L1v1"
     },
     "data": {
-      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv12",
+      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv9",
       "era": "Run2_2018,run2_nanoAOD_106Xv2",
-      "conditions": "auto:phase1_2018_realistic"
+      "conditions": "106X_dataRun2_v35"
     }
   },
   "2022-preEE": {
