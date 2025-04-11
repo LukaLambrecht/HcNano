@@ -84,7 +84,7 @@ config.JobType.pluginName = "Analysis"
 # set the config file
 config.JobType.psetName = psetName
 # set the requested time limit and memory limit
-config.JobType.maxJobRuntimeMin = 1315
+#config.JobType.maxJobRuntimeMin = 1315 # disable if using "Automatic" splitting
 config.JobType.maxMemoryMB = 2500
 # set the number of requested cores
 config.JobType.numCores = 1

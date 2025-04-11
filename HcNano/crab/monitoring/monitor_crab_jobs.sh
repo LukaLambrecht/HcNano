@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run by adding something like this in the acrontab file:
-# 0 */4 * * * lxplus.cern.ch cd <path to here>; bash monitor_crab_jobs.sh >> <some log file> 2>&1
+# 0 */4 * * * lxplus.cern.ch cd <path to here>; cmsenv; bash monitor_crab_jobs.sh >> <some log file> 2>&1
 
 
 # print date and time for bookkeeping
