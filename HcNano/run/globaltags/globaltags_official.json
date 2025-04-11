@@ -1,14 +1,14 @@
 {
   "2018-UL":{
     "mc": {
-      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv9",
+      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv9 and confirmed by DAS",
       "era": "Run2_2018,run2_nanoAOD_106Xv2",
       "conditions": "106X_upgrade2018_realistic_v16_L1v1"
     },
     "data": {
-      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv9",
+      "meta": "https://gitlab.cern.ch/cms-nanoAOD/nanoaod-doc/-/wikis/Releases/NanoAODv9 but changed to v36 instead of v35 based on DAS info for the *GT36* datasets used in HcNtuplizer, so a fair comparison can be made between custom and central NanoAOD",
       "era": "Run2_2018,run2_nanoAOD_106Xv2",
-      "conditions": "106X_dataRun2_v35"
+      "conditions": "106X_dataRun2_v36"
     }
   },
   "2022-preEE": {
