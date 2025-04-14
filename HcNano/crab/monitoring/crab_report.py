@@ -1,6 +1,7 @@
 #!/bin/env python3
 
-# Kill all CRAB jobs
+# Make a report (including missing lumis) for all CRAB jobs
+# More info: https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3Commands#crab_report
 
 import os
 import sys
@@ -22,7 +23,7 @@ if __name__ == '__main__':
         print('({})'.format(crabdir))
 
         # make cmd
-        cmd = f'crab kill {crabdir}'
+        cmd = f'crab report {crabdir} --recovery notFinished'
 
         # execute command
         os.system(cmd)

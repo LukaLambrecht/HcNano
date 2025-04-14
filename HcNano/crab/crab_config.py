@@ -16,17 +16,14 @@ import sys
 # (set by the submit script)
 dataset = os.environ['CRAB_DATASET']
 (_, sample, version, tier) = dataset.split('/')
-sample_short = '_'.join(sample.split('_')[:2])
-version_short = '_'.join(version.split('_')[:1])
+requestName = os.environ['CRAB_REQUESTNAME']
 outputdir = os.environ['CRAB_OUTPUTDIR']
 psetName = os.environ['CRAB_PSETNAME']
 splitting = os.environ['CRAB_SPLITTING']
 unitsPerJob = int(os.environ['CRAB_UNITSPERJOB'])
 totalUnits = int(os.environ['CRAB_TOTALUNITS'])
-
-# define a name for this CRAB workflow
-# (used for CRAB internal bookkeeping)
-requestName = sample_short + '_' + version_short
+lumiMask = os.environ['CRAB_LUMIMASK']
+if len(lumiMask)==0: lumiMask = None
 
 # define a work area for this CRAB workflow
 # (where the log files will appear)
@@ -51,6 +48,7 @@ print(f'  - psetName: {psetName}')
 print(f'  - splitting: {splitting}')
 print(f'  - unitsPerJob: {unitsPerJob}')
 print(f'  - totalUnits: {totalUnits}')
+print(f'  - lumiMask: {lumiMask}')
 
 # set CRAB config
 from CRABClient.UserUtilities import config
@@ -71,6 +69,7 @@ config.Data.inputDataset = dataset
 config.Data.splitting = splitting
 if unitsPerJob > 0: config.Data.unitsPerJob = unitsPerJob
 if totalUnits > 0: config.Data.totalUnits = totalUnits
+if lumiMask is not None: config.Data.lumiMask = lumiMask
 # set the output directory
 # note that /store/user/<username> is automatically translated by CRAB
 # to a physical file location, depending on the storage site.
@@ -84,7 +83,7 @@ config.JobType.pluginName = "Analysis"
 # set the config file
 config.JobType.psetName = psetName
 # set the requested time limit and memory limit
-config.JobType.maxJobRuntimeMin = 1315 # disable if using "Automatic" splitting
+if splitting != 'Automatic': config.JobType.maxJobRuntimeMin = 1315
 config.JobType.maxMemoryMB = 2500
 # set the number of requested cores
 config.JobType.numCores = 1

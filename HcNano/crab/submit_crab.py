@@ -25,6 +25,7 @@ if __name__=='__main__':
       help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
     parser.add_argument('--total_units', default=-1, type=int,
       help = 'See https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile')
+    parser.add_argument('--recovery', default=False, action='store_true')
     parser.add_argument('--dtype', default=None, choices=[None, 'mc', 'data'])
     parser.add_argument('--era', default=None)
     parser.add_argument('--globaltag', default=None)
@@ -71,13 +72,45 @@ if __name__=='__main__':
         print('Submitting dataset {} ({}/{}) using CRAB...'.format(
           dataset, didx+1, len(datasets)))
 
+        # make a request name (for CRAB internal bookkeeping)
+        (_, sample, version, tier) = dataset.split('/')
+        sample_short = '_'.join(sample.split('_')[:2])
+        version_short = '_'.join(version.split('_')[:1])
+        request_name = sample_short + '_' + version_short
+
+        # handle case of recovery job
+        if args.recovery:
+            # check if crab working directory already exists
+            # note: naming convention must be in sync with crab_config.py,
+            #       maybe try to automate later.
+            crab_area = os.path.join('crab_logs', sample, version, 'crab_' + request_name)
+            crab_area = os.path.abspath(crab_area)
+            if not os.path.exists(crab_area):
+                msg = f'WARNING: requested recovery job for dataset {dataset},'
+                msg += f' but the expected crab area {crab_area} does not exist.'
+                print(msg)
+                continue
+            # run the crab report command
+            reportcmd = f'crab report {crab_area} --recovery notFinished'
+            os.system(reportcmd)
+            missing_lumis = os.path.join(crab_area, 'results', 'notFinishedLumis.json')
+            if not os.path.exists(missing_lumis):
+                msg = f'WARNING: could not find notFinishedLumis.json;'
+                msg += f' either there are no missing lumis, or the crab report command failed.'
+                print(msg)
+                continue
+            # make a new request name
+            request_name = request_name + '_recovery'
+
         # set environment variables
         os.environ['CRAB_DATASET'] = dataset
+        os.environ['CRAB_REQUESTNAME'] = request_name
         os.environ['CRAB_PSETNAME'] = pset
         os.environ['CRAB_OUTPUTDIR'] = args.outputdirname
         os.environ['CRAB_SPLITTING'] = args.splitting
         os.environ['CRAB_UNITSPERJOB'] = str(args.units_per_job)
         os.environ['CRAB_TOTALUNITS'] = str(args.total_units)
+        os.environ['CRAB_LUMIMASK'] = missing_lumis if args.recovery else ''
 
         # run crab config
         # (only for producing some printouts for testing,
