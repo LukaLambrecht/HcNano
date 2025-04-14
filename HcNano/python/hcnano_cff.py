@@ -1,6 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.common_cff import Var
 
+import os
+import sys
+import json
+
 
 def add_nlepton_selector(process, nleptons=0, dtype='mc'):
     process.NLeptonSelector = cms.EDFilter("NLeptonSelector",
@@ -8,6 +12,7 @@ def add_nlepton_selector(process, nleptons=0, dtype='mc'):
         muonsToken = cms.InputTag("slimmedMuons"),
         electronsToken = cms.InputTag("slimmedElectrons")
     )
+    
     # modify the process.nanoAOD_step to insert the filter
     # note: this assumes the process.nanoAOD_step was defined in the CMSSW config
     #       before the customization function.
@@ -16,18 +21,68 @@ def add_nlepton_selector(process, nleptons=0, dtype='mc'):
       process.NLeptonSelector
       * orig_nanoaod_sequence
     )
+    
     # also need to modify the output module to store only events
     # that passed the process.nanoAOD_step (including the filter as above).
     outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
     outputmodule.SelectEvents = cms.untracked.PSet(
       SelectEvents = cms.vstring("nanoAOD_step")
     )
+    
     # need to put the genWeightsTable in a separate Path,
     # else only events passing the filter are contributing
     # to the genEventSumw and genEventCount branches in the Runs tree.
     if dtype=='mc':
         process.genWeightsPath = cms.Path(process.genWeightsTable)
         process.schedule.append(process.genWeightsPath)
+
+
+def add_trigger_selector(process, dtype='mc', year=None):
+    
+    # parse year
+    # (to be updated as needed)
+    year = '2018-UL'
+    if year is None:
+        msg = 'Year must be provided for the trigger selector.'
+        raise Exception(msg)
+    triggeryear = year
+    triggeryear = triggeryear.split('-')[0]
+
+    # read trigger names
+    triggerfile = os.path.join(os.path.dirname(__file__), 'triggers.json')
+    with open(triggerfile, 'r') as f:
+        triggers = json.load(f)
+    triggers = triggers[triggeryear]
+
+    # make selector
+    process.TriggerSelector = cms.EDFilter("TriggerSelector",
+        triggerNames = cms.vstring(*triggers),
+        triggersToken = cms.InputTag("TriggerResults::HLT")
+    )
+    
+    # modify the process.nanoAOD_step to insert the filter
+    # note: this assumes the process.nanoAOD_step was defined in the CMSSW config
+    #       before the customization function.
+    orig_nanoaod_sequence = process.nanoAOD_step._seq
+    process.nanoAOD_step = cms.Path(
+      process.TriggerSelector
+      * orig_nanoaod_sequence
+    )
+    
+    # also need to modify the output module to store only events
+    # that passed the process.nanoAOD_step (including the filter as above).
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.SelectEvents = cms.untracked.PSet(
+      SelectEvents = cms.vstring("nanoAOD_step")
+    )
+    
+    # need to put the genWeightsTable in a separate Path,
+    # else only events passing the filter are contributing
+    # to the genEventSumw and genEventCount branches in the Runs tree.
+    if dtype=='mc':
+        process.genWeightsPath = cms.Path(process.genWeightsTable)
+        process.schedule.append(process.genWeightsPath)
+
 
 def add_ds_gen_producer(process, name='GenDsMeson', dtype='mc'):
     process.DsMesonGenProducer = cms.EDProducer("DsMesonGenProducer",
@@ -108,7 +163,17 @@ def add_cfragmentation_producer(process, name='cFragmentation', dtype='mc'):
     outputmodule.outputCommands.append("keep *_cFragmentationProducer_*_*")
 
 
-def hcnano_customize(process, dtype='mc'):
+def hcnano_customize(process):
+
+    # get data type and year from process
+    # (not standard; must be set manually e.g. with --customize_commands in cmsDriver)
+    dtype = 'mc'
+    if hasattr(process, 'dtype'): dtype = process.dtype
+    else: print(f'WARNING: process has no attribute dtype; assuming {dtype}.')
+    year = None
+    if hasattr(process, 'year'): year = process.year
+    else: print(f'WARNING: process has not attribute year; assuming {year}.')
+    print(f'INFO from hcnano_customize: using dtype {dtype} and year {year}.')
 
     # set output module for later use
     outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
@@ -134,6 +199,7 @@ def hcnano_customize(process, dtype='mc'):
     process.options.wantSummary = cms.untracked.bool(True)
 
     # do event selection to reduce size of output
+    add_trigger_selector(process, dtype=dtype, year=year)
     add_nlepton_selector(process, nleptons=4, dtype=dtype)
 
     # add custom producers
@@ -172,9 +238,3 @@ def hcnano_customize(process, dtype='mc'):
     outputmodule.outputCommands.append("drop nanoaodFlatTable_tau*_*_*")
 
     return process
-
-def hcnano_customize_mc(process):
-    return hcnano_customize(process, dtype='mc')
-
-def hcnano_customize_data(process):
-    return hcnano_customize(process, dtype='data')

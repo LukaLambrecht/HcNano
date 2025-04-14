@@ -58,7 +58,7 @@ if __name__=='__main__':
             configname=args.configname,
             nentries=args.nentries, outputfile=args.outputfile,
             conditions=globaltag, era=era, dtype=args.dtype,
-            no_exec=args.no_exec)
+            no_exec=args.no_exec, year=args.year)
 
     # run the cmsDriver command
     print(cmd)

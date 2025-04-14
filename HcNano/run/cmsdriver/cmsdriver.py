@@ -14,7 +14,8 @@ def make_nano_cmsdriver(inputfile,
         conditions = None,
         era = None,
         dtype = None,
-        no_exec = False):
+        no_exec = False,
+        year = None):
 
     # check dtype
     if dtype is None:
@@ -38,7 +39,14 @@ def make_nano_cmsdriver(inputfile,
     cmd += f' -n {nentries}'
     
     # do customization
-    cmd += f' --customise PhysicsTools/HcNano/hcnano_cff.hcnano_customize_{dtype}'
+    # note: syntax seems more complicated than needed,
+    #       but this seems to be required because of CMSSW quirks...
+    customize_commands = []
+    if dtype is not None: customize_commands.append(f'process.__dict__[\'dtype\'] = \'{dtype}\'')
+    if year is not None: customize_commands.append(f'process.__dict__[\'year\'] = \'{year}\'')
+    customize_commands.append('from PhysicsTools.HcNano.hcnano_cff import hcnano_customize')
+    customize_commands.append('process = hcnano_customize(process)')
+    cmd += ' --customise_commands="{}"'.format('; '.join(customize_commands))
 
     # return the cmsDriver command
     return cmd
