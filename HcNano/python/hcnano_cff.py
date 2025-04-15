@@ -33,8 +33,11 @@ def add_nlepton_selector(process, nleptons=0, dtype='mc'):
     # else only events passing the filter are contributing
     # to the genEventSumw and genEventCount branches in the Runs tree.
     if dtype=='mc':
-        process.genWeightsPath = cms.Path(process.genWeightsTable)
-        process.schedule.append(process.genWeightsPath)
+        # note: errors occur if multiple filters try to set the genWeightsPath,
+        # so simply check if it was already set before.
+        if not hasattr(process, 'genWeightsPath'):
+            process.genWeightsPath = cms.Path(process.genWeightsTable)
+            process.schedule.append(process.genWeightsPath)
 
 
 def add_trigger_selector(process, dtype='mc', year=None):
@@ -80,8 +83,11 @@ def add_trigger_selector(process, dtype='mc', year=None):
     # else only events passing the filter are contributing
     # to the genEventSumw and genEventCount branches in the Runs tree.
     if dtype=='mc':
-        process.genWeightsPath = cms.Path(process.genWeightsTable)
-        process.schedule.append(process.genWeightsPath)
+        # note: errors occur if multiple filters try to set the genWeightsPath,
+        # so simply check if it was already set before.
+        if not hasattr(process, 'genWeightsPath'):
+            process.genWeightsPath = cms.Path(process.genWeightsTable)
+            process.schedule.append(process.genWeightsPath)
 
 
 def add_ds_gen_producer(process, name='GenDsMeson', dtype='mc'):
