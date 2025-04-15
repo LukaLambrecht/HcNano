@@ -15,8 +15,9 @@
 **crab_logs
 **crab.log
 
-# ignore auto-generated config file for CRAB
+# ignore auto-generated config files
 HcNano/crab/cmsrun_config.py
+HcNano/run/config_NANO.py
 
 # ignore crab monitoring output
 HcNano/crab/monitoring/*.txt
