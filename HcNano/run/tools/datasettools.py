@@ -5,6 +5,7 @@
 
 import os
 import sys
+import json
 
 
 def get_files( datasetname,
@@ -122,3 +123,38 @@ def get_files( datasetname,
 
   # return the result
   return filenames
+
+
+def get_runlumis(datasetname):
+    '''
+    Get runs and lumisections in a dataset
+    (only for DAS, not for local sets)
+    '''
+    # make and run the DAS query
+    dasquery = 'run lumi dataset={}'.format(datasetname)
+    dascmd = "dasgoclient -query '{}' --limit 0".format(dasquery)
+    dasstdout = os.popen(dascmd).read().strip(' \t\n')
+    # check for DAS errors
+    if 'X509_USER_PROXY' in dasstdout:
+        msg = 'ERROR: DAS returned a proxy error:\n'+dasstdout
+        raise Exception(msg)
+    # format the output
+    runlumis = {el.split(' ')[0]: json.loads(el.split(' ')[1]) for el in dasstdout.split('\n')}
+    return runlumis
+
+def get_dataset_summary(datasetname):
+    '''
+    Get some summary numbers for a dataset
+    (only for DAS, not for local sets)
+    '''
+    # make and run the DAS query
+    dasquery = 'summary dataset={}'.format(datasetname)
+    dascmd = "dasgoclient -query '{}' --limit 0".format(dasquery)
+    dasstdout = os.popen(dascmd).read().strip(' \t\n')
+    # check for DAS errors
+    if 'X509_USER_PROXY' in dasstdout:
+        msg = 'ERROR: DAS returned a proxy error:\n'+dasstdout
+        raise Exception(msg)
+    # format the output
+    summary = json.loads(dasstdout)[0]
+    return summary

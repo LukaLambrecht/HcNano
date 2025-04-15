@@ -9,6 +9,7 @@ sys.path.append(topdir)
 
 from run.globaltags.globaltag import get_globaltag
 from run.tools.samplelisttools import read_samplelists
+from run.tools.datasettools import get_dataset_summary
 from make_cmsrun_config import make_cmsrun_config
 
 
@@ -34,7 +35,29 @@ if __name__=='__main__':
     args = parser.parse_args()
 
     # read samplelists
-    datasets = read_samplelists(args.samplelist, verbose=True)
+    print('Reading datasets...')
+    datasets = read_samplelists(args.samplelist, verbose=False)
+
+    # get number of files and lumisections (to estimate how many jobs are reasonable)
+    nfiles = {}
+    nlumis = {}
+    nevents = {}
+    print('Finding number of files and lumisections...')
+    for dataset in datasets:
+        summary = get_dataset_summary(dataset)
+        nfiles[dataset] = summary['nfiles']
+        nlumis[dataset] = summary['nlumis']
+        nevents[dataset] = summary['nevents']
+    nfiles_tot = sum(list(nfiles.values()))
+    nlumis_tot = sum(list(nlumis.values()))
+    nevents_tot = sum(list(nevents.values()))
+
+    # printouts
+    print('Found following datasets in samplelist:')
+    for dataset in datasets:
+        print(f'  - {dataset} ({nfiles[dataset]} files, {nlumis[dataset]} lumisections, {nevents[dataset]} events)')
+    print('  -----')
+    print(f'  - total: {nfiles_tot} files, {nlumis_tot} lumisections, {nevents_tot} events')
 
     # parse global tag
     if args.globaltag is not None and args.globaltag.endswith('.json'):
@@ -53,6 +76,11 @@ if __name__=='__main__':
         era = get_globaltag(args.era, year=args.year, dtype=args.dtype)['era']
     else: era = args.era
     print(f'Using era: {era}')
+
+    # ask for confirmation
+    print('Continue? (y/n)')
+    go = six.moves.input()
+    if go!='y': sys.exit()
 
     # make the cmsRun config
     pset = 'cmsrun_config.py'
