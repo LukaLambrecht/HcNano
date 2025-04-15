@@ -8,6 +8,7 @@ Custom analyzer class for selecting events with a given number of leptons.
 // system include files
 #include <memory>
 #include <unordered_map>
+#include <algorithm>
 
 // root classes
 #include <Math/Vector4D.h>
