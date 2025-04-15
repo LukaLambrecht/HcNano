@@ -87,6 +87,7 @@ if __name__=='__main__':
         for d in exist: os.system(f'rm -r {d}')
 
     # make new directory for each sample and copy or move all files
+    print('Moving files to new sample directories...')
     for sample_name, versiondict in samples.items():
         for version_name, request_dict in versiondict.items():
             newsample_name = sample_name+'_'+version_name
