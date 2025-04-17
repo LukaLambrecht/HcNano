@@ -70,12 +70,15 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::vector<float> DsMeson_Pi_pt;
     std::vector<float> DsMeson_Pi_eta;
     std::vector<float> DsMeson_Pi_phi;
+    std::vector<int> DsMeson_Pi_charge;
     std::vector<float> DsMeson_KPlus_pt;
     std::vector<float> DsMeson_KPlus_eta;
     std::vector<float> DsMeson_KPlus_phi;
+    std::vector<int> DsMeson_KPlus_charge;
     std::vector<float> DsMeson_KMinus_pt;
     std::vector<float> DsMeson_KMinus_eta;
     std::vector<float> DsMeson_KMinus_phi;
+    std::vector<int> DsMeson_KMinus_charge;
     std::vector<float> DsMeson_tr1tr2_deltaR;
     std::vector<float> DsMeson_tr3phi_deltaR;
     std::vector<float> DsMeson_phivtx_normchi2;
@@ -120,7 +123,9 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         const reco::Track tr2 = selectedTracks.at(j);
 
         // candidates must have opposite charge
-        if(tr1.charge() * tr2.charge() > 0) continue;
+        // note: now disabled for study to check if candidates with same charge
+        //       can be used for background estimation.
+        //if(tr1.charge() * tr2.charge() > 0) continue;
 
         // candidates must point approximately in the same direction
         if( reco::deltaR(tr1, tr2) > 0.27 ) continue;
@@ -145,7 +150,18 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         } else if(tr1.charge()<0. and tr2.charge()>0){
 	        postrack = tr2;
 	        negtrack = tr1;
-        } else continue; // should not normally happen but just for safety
+        } else {
+            // if both tracks have the same charge
+            // (e.g. in combinatorial background),
+            // assign them randomly.
+            if( rand() % 2 == 0 ){
+                postrack = tr1;
+                negtrack = tr2;
+            } else {
+                postrack = tr2;
+                negtrack = tr1;
+            }
+        }
 
         // make invariant mass (under the assumption of K mass for both tracks)
         ROOT::Math::PtEtaPhiMVector KPlusP4(postrack.pt(), postrack.eta(), postrack.phi(), kmass);
@@ -214,12 +230,15 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             DsMeson_Pi_pt.push_back( piP4.pt() );
             DsMeson_Pi_eta.push_back( piP4.eta() );
             DsMeson_Pi_phi.push_back( piP4.phi() );
+            DsMeson_Pi_charge.push_back( tr3.charge() );
             DsMeson_KPlus_pt.push_back( KPlusP4.pt() );
             DsMeson_KPlus_eta.push_back( KPlusP4.eta() );
             DsMeson_KPlus_phi.push_back( KPlusP4.phi() );
+            DsMeson_KPlus_charge.push_back( postrack.charge() );
             DsMeson_KMinus_pt.push_back( KMinusP4.pt() );
             DsMeson_KMinus_eta.push_back( KMinusP4.eta() );
             DsMeson_KMinus_phi.push_back( KMinusP4.phi() );
+            DsMeson_KMinus_charge.push_back( negtrack.charge() );
             DsMeson_tr1tr2_deltaR.push_back( reco::deltaR(tr1, tr2) );
             DsMeson_tr3phi_deltaR.push_back( reco::deltaR(tr3, phiP4) );
             DsMeson_phivtx_normchi2.push_back( phivtx.normalisedChiSquared() );
@@ -276,12 +295,15 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     table->addColumn<float>("Pi_pt", DsMeson_Pi_pt, "");
     table->addColumn<float>("Pi_eta", DsMeson_Pi_eta, "");
     table->addColumn<float>("Pi_phi", DsMeson_Pi_phi, "");
+    table->addColumn<int>("Pi_charge", DsMeson_Pi_charge, "");
     table->addColumn<float>("KPlus_pt", DsMeson_KPlus_pt, "");
     table->addColumn<float>("KPlus_eta", DsMeson_KPlus_eta, "");
     table->addColumn<float>("KPlus_phi", DsMeson_KPlus_phi, "");
+    table->addColumn<int>("KPlus_charge", DsMeson_KPlus_charge, "");
     table->addColumn<float>("KMinus_pt", DsMeson_KMinus_pt, "");
     table->addColumn<float>("KMinus_eta", DsMeson_KMinus_eta, "");
     table->addColumn<float>("KMinus_phi", DsMeson_KMinus_phi, "");
+    table->addColumn<int>("KMinus_charge", DsMeson_KMinus_charge, "");
     table->addColumn<float>("tr1tr2_deltaR", DsMeson_tr1tr2_deltaR, "");
     table->addColumn<float>("tr3phi_deltaR", DsMeson_tr3phi_deltaR, "");
     table->addColumn<float>("phivtx_normchi2", DsMeson_phivtx_normchi2, "");

@@ -27,7 +27,9 @@ if __name__=='__main__':
     # loop over files and open them
     failed = []
     for idx, rootfile in enumerate(rootfiles):
-        print('Reading file {} / {}...'.format(idx+1, len(rootfiles)), end='\r')
+        msg = f'Reading file {idx+1} / {len(rootfiles)}'
+        msg += f' (currently {len(failed)} / {idx+1} failed)'
+        print(msg, end='\r')
         try:
             with uproot.open(f'{rootfile}:Events') as tree:
                 nevents = tree.num_entries

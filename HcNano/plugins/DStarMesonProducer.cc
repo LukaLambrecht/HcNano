@@ -70,12 +70,15 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     std::vector<float> DStarMeson_Pi1_pt;
     std::vector<float> DStarMeson_Pi1_eta;
     std::vector<float> DStarMeson_Pi1_phi;
+    std::vector<int> DStarMeson_Pi1_charge;
     std::vector<float> DStarMeson_K_pt;
     std::vector<float> DStarMeson_K_eta;
     std::vector<float> DStarMeson_K_phi;
+    std::vector<int> DStarMeson_K_charge;
     std::vector<float> DStarMeson_Pi2_pt;
     std::vector<float> DStarMeson_Pi2_eta;
     std::vector<float> DStarMeson_Pi2_phi;
+    std::vector<int> DStarMeson_Pi2_charge;
     std::vector<float> DStarMeson_tr1tr2_deltaR;
     std::vector<float> DStarMeson_tr3d0_deltaR;
     std::vector<float> DStarMeson_d0vtx_normchi2;
@@ -120,7 +123,9 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
         const reco::Track tr2 = selectedTracks.at(j);
 
         // candidates must have opposite charge
-        if(tr1.charge() * tr2.charge() > 0) continue;
+        // note: now disabled for study to check if candidates with same charge
+        //       can be used for background estimation.
+        //if(tr1.charge() * tr2.charge() > 0) continue;
 
         // candidates must point approximately in the same direction
         if( reco::deltaR(tr1, tr2) > 0.4 ) continue;
@@ -142,7 +147,18 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
         } else if(tr1.charge()<0. and tr2.charge()>0){
 	        postrack = tr2;
 	        negtrack = tr1;
-        } else continue; // should not normally happen but just for safety
+        } else {
+            // if both tracks have the same charge
+            // (e.g. in combinatorial background),
+            // assign them randomly.
+            if( rand() % 2 == 0 ){
+                postrack = tr1;
+                negtrack = tr2;
+            } else {
+                postrack = tr2;
+                negtrack = tr1;
+            }
+        }
 
         // make invariant mass
         // (note: although the D0 meson decays preferentially to K- pi+ rather than K+ pi-,
@@ -160,14 +176,20 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
         // invariant mass must be close to resonance mass
         ROOT::Math::PtEtaPhiMVector pi2P4(0, 0, 0, 0);
         ROOT::Math::PtEtaPhiMVector KP4(0, 0, 0, 0);
+        reco::Track pi2Track;
+        reco::Track KTrack;
         if( (std::abs(dzeroInvMass - dzeromass) < 0.035)
             && (std::abs(dzeroInvMass - dzeromass) < std::abs(dzerobarInvMass - dzeromass)) ){
             pi2P4 = piPlusP4;
             KP4 = KMinusP4;
+            pi2Track = postrack;
+            KTrack = negtrack;
         } else if( (std::abs(dzerobarInvMass - dzeromass) < 0.035) 
                    && (std::abs(dzerobarInvMass - dzeromass) < std::abs(dzeroInvMass - dzeromass)) ){
             pi2P4 = piMinusP4;
             KP4 = KPlusP4;
+            pi2Track = negtrack;
+            KTrack = postrack;
             dzeroP4 = dzerobarP4;
             dzeroInvMass = dzerobarInvMass;
         } else continue;
@@ -233,12 +255,15 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
             DStarMeson_Pi1_pt.push_back( pi1P4.pt() );
             DStarMeson_Pi1_eta.push_back( pi1P4.eta() );
             DStarMeson_Pi1_phi.push_back( pi1P4.phi() );
+            DStarMeson_Pi1_charge.push_back( tr3.charge() );
             DStarMeson_K_pt.push_back( KP4.pt() );
             DStarMeson_K_eta.push_back( KP4.eta() );
             DStarMeson_K_phi.push_back( KP4.phi() );
+            DStarMeson_K_charge.push_back( KTrack.charge() );
             DStarMeson_Pi2_pt.push_back( pi2P4.pt() );
             DStarMeson_Pi2_eta.push_back( pi2P4.eta() );
             DStarMeson_Pi2_phi.push_back( pi2P4.phi() );
+            DStarMeson_Pi2_charge.push_back( pi2Track.charge() );
             DStarMeson_tr1tr2_deltaR.push_back( reco::deltaR(tr1, tr2) );
             DStarMeson_tr3d0_deltaR.push_back( reco::deltaR(tr3, dzeroP4) );
             DStarMeson_d0vtx_normchi2.push_back( dzerovtx.normalisedChiSquared() );
@@ -299,12 +324,15 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     table->addColumn<float>("Pi1_pt", DStarMeson_Pi1_pt, "");
     table->addColumn<float>("Pi1_eta", DStarMeson_Pi1_eta, "");
     table->addColumn<float>("Pi1_phi", DStarMeson_Pi1_phi, "");
+    table->addColumn<int>("Pi1_charge", DStarMeson_Pi1_charge, "");
     table->addColumn<float>("K_pt", DStarMeson_K_pt, "");
     table->addColumn<float>("K_eta", DStarMeson_K_eta, "");
     table->addColumn<float>("K_phi", DStarMeson_K_phi, "");
+    table->addColumn<int>("K_charge", DStarMeson_K_charge, "");
     table->addColumn<float>("Pi2_pt", DStarMeson_Pi2_pt, "");
     table->addColumn<float>("Pi2_eta", DStarMeson_Pi2_eta, "");
     table->addColumn<float>("Pi2_phi", DStarMeson_Pi2_phi, "");
+    table->addColumn<int>("Pi2_charge", DStarMeson_Pi2_charge, "");
     table->addColumn<float>("tr1tr2_deltaR", DStarMeson_tr1tr2_deltaR, "");
     table->addColumn<float>("tr3d0_deltaR", DStarMeson_tr3d0_deltaR, "");
     table->addColumn<float>("d0vtx_normchi2", DStarMeson_d0vtx_normchi2, "");

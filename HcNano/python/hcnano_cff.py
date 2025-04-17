@@ -205,8 +205,8 @@ def hcnano_customize(process):
     process.options.wantSummary = cms.untracked.bool(True)
 
     # do event selection to reduce size of output
-    add_trigger_selector(process, dtype=dtype, year=year)
-    add_nlepton_selector(process, nleptons=4, dtype=dtype)
+    #add_trigger_selector(process, dtype=dtype, year=year)
+    #add_nlepton_selector(process, nleptons=4, dtype=dtype)
 
     # add custom producers
     if dtype=='mc':
