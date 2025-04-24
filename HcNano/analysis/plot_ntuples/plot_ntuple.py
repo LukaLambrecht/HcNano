@@ -24,6 +24,8 @@ if __name__=='__main__':
     parser.add_argument('-v', '--variables', required=True)
     parser.add_argument('-o', '--outputdir', required=True)
     parser.add_argument('--genmatchbranch', default=None)
+    parser.add_argument('--chargebranch1', required=True)
+    parser.add_argument('--chargebranch2', required=True)
     parser.add_argument('--weighted', default=False, action='store_true')
     parser.add_argument('--donormalized', default=False, action='store_true')
     parser.add_argument('--dolog', default=False, action='store_true')
@@ -62,17 +64,25 @@ if __name__=='__main__':
     new_events = {}
     for key, sample in events.items():
         new_sample = {}
+        #print("Available fields in sample:", sample.fields)
+        print(events[dummykey].type)
         for variable in sample.fields:
             new_sample[variable] = ak.flatten(sample[variable], axis=None)
         new_sample = ak.Array(new_sample)
         new_events[key] = new_sample
     events = new_events
-
+    
     # split in gen-matched and non-gen-matched
     if args.genmatchbranch is not None:
         mask_matching = events[dummykey][args.genmatchbranch].to_numpy().astype(bool)
-        events_matched = events[dummykey][mask_matching]
-        events_notmatched = events[dummykey][~mask_matching]
+        charge1 = events[dummykey][args.chargebranch1].to_numpy().astype(int)
+        charge2 = events[dummykey][args.chargebranch2].to_numpy().astype(int)
+        mask_os = (charge1*charge2 < 0)
+        mask_pp = ((charge1*charge2 > 0) & (charge1>0))
+        mask_nn = ((charge1*charge2 > 0) & (charge1<0))
+
+        events_matched = events[dummykey][((mask_matching) & (mask_os))]
+        events_notmatched = events[dummykey][((~mask_matching) & (mask_os))]
         events = {}
         events['notmatched'] = events_notmatched
         events['matched'] = events_matched

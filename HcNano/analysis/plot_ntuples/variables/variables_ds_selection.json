@@ -9,6 +9,24 @@
   "nbins": 50
 },
 {
+  "name": "DsMeson_KPlus_charge",
+  "variable": "DsMeson_KPlus_charge",
+  "axtitle": "DsMeson K charge",
+  "unit": "",
+  "xlow": -3,
+  "xhigh": 3,
+  "nbins": 50
+},
+{
+  "name": "DsMeson_KMinus_charge",
+  "variable": "DsMeson_KMinus_charge",
+  "axtitle": "DsMeson K charge",
+  "unit": "",
+  "xlow": -3,
+  "xhigh": 3,
+  "nbins": 50
+},
+{
   "name": "DsMeson_PhiMeson_mass",
   "variable": "DsMeson_PhiMeson_mass",
   "axtitle": "Reconstructed $m(\\phi)$",
