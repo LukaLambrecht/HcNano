@@ -117,6 +117,18 @@ def add_ds_producer(process, name='DsMeson', dtype='mc'):
     outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
     outputmodule.outputCommands.append("keep *_DsMesonProducer_*_*")
 
+def add_bs_gen_producer(process, name='GenBsMeson', dtype='mc'):
+    process.BsMesonGenProducer = cms.EDProducer("BsMesonGenProducer",
+        name = cms.string(name),
+        genParticlesToken = cms.InputTag("prunedGenParticles")
+    )
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.BsMesonGenProducer
+    )
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.outputCommands.append("keep *_BsMesonGenProducer_*_*")
+
 def add_dstar_gen_producer(process, name='GenDStarMeson', dtype='mc'):
     process.DStarMesonGenProducer = cms.EDProducer("DStarMesonGenProducer",
         name = cms.string(name),
@@ -211,11 +223,12 @@ def hcnano_customize(process):
     # add custom producers
     if dtype=='mc':
         add_ds_gen_producer(process, dtype=dtype)
+        add_bs_gen_producer(process, dtype=dtype)
         add_dstar_gen_producer(process, dtype=dtype)
         add_dzero_gen_producer(process, dtype=dtype)
         add_cfragmentation_producer(process, dtype=dtype)
-    add_ds_producer(process, dtype=dtype)
-    add_dstar_producer(process, dtype=dtype)
+        add_ds_producer(process, dtype=dtype)
+        add_dstar_producer(process, dtype=dtype)
 
     # remove unneeded output
     # note: can give errors if the main table for a given object is dropped
