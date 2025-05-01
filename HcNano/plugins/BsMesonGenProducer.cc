@@ -54,7 +54,7 @@ void BsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 
     // convert to format suitable for flat table
     std::map< std::string, std::vector<float> > variables;
-    std::vector<std::string> particleNames = {"Bs", "Ds", "X", "X0", "D0", "Phi", "Pi", "KPlus", "KMinus"};
+    std::vector<std::string> particleNames = {"Bs", "DStar", "DZero", "Pi1", "K", "Pi2"};
     for( const auto& particleName: particleNames ){
         std::vector<float> pt;
         std::vector<float> eta;
@@ -89,13 +89,12 @@ int BsMesonGenProducer::find_Bs_decay_type(
     // find what type of event this is concerning the production and decay of Bs mesons.
     // the numbering convention is as follows:
     // 0: undefined, none of the below.
-    // -3: at least one Bs -> Ds X -> phi pi -> K K pi anything (i.e. the decay of interest).
-    // -2: at least one Bs -> Ds X -> phi pi (i.e. the decay of interest).
-    // -1: at least one Bs -> D0 X
-    // 1: at least one Bs -> Ds X, but excluding the above.
-    // 2: at least one charmed meson/baryon
-    // 3: at least one Bs, but excluding the above.
-    // 4: at least one charmed hadron, but excluding the above.
+    //-2: at least one D* -> D0 pi -> K pi pi (i.e. the decay of interest).
+    //-1: at least one D* -> D0 pi, but excluding the above.
+    // 1: at least 1 D* meson
+    // 2: at least one charmed meson in B daughter particles (D0, Ds, D*, D+-)
+    // 3: at least one Bs, B0 or B+- (but now being commented out)
+    // 4: if there's B meson/baryon in hard scattering
     
     // find all gen particles from the hard scattering
     // (implemented here as having a proton as their mother)
@@ -114,95 +113,96 @@ int BsMesonGenProducer::find_Bs_decay_type(
     // loop over hard scattering particles
     for( const reco::GenParticle* p : hardScatterParticles ){
 
-        // check if it is a bottom hadron
+        // check if it is a bottom meson/hadron
         int pdgid = p->pdgId();
         bool bMeson = (std::abs(pdgid) > 500 && std::abs(pdgid) < 600);
         bool bBaryon = (std::abs(pdgid) > 5000 && std::abs(pdgid) < 6000);
         if( !(bMeson || bBaryon) ) continue;
         if(res > 4) res = 4;
 
-        // check if it is a Bs meson
-        if(std::abs(pdgid) != 531) continue;
+        // check if it is a Bs, B0 or B+- meson
+        // now, not requiring it to be any specific B meson, so now the largest res value is 3
+        // if( std::abs(pdgid) != 531 && std::abs(pdgid) != 521 && std::abs(pdgid) != 511 ) continue;
         const reco::GenParticle* bs = p;
         if(res > 3) res = 3;
 
-        // find the decay products of the Bs meson
+        // find the decay products of the B mesons
         std::vector<const reco::GenParticle*> bsDaughters;
         for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
             bsDaughters.push_back( &genParticles[bs->daughterRef(i).key()] );
         }
         
-        // if there's at least some charmed meson
-        if( bsDaughters.size()!=2 ) continue;
-        int pdg0 = bsDaughters.at(0)->pdgId();
-        int pdg1 = bsDaughters.at(1)->pdgId();
-        bool cMeson0 = (std::abs(pdg0) > 400 && std::abs(pdg0) < 500);
-        bool cBaryon0 = (std::abs(pdg0) > 4000 && std::abs(pdg0) < 5000);
-        bool cMeson1 = (std::abs(pdg1) > 400 && std::abs(pdg1) < 500);
-        bool cBaryon1 = (std::abs(pdg1) > 4000 && std::abs(pdg1) < 5000);
-        if (!(cMeson0 || cBaryon0 || cMeson1 || cBaryon1)) continue;
+        // check if there's at least 1 charmed meson in b daughters particles
+        bool hasCharm = false;
+        // const reco::GenParticle* bMeson = p;
+        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
+            const auto& daughter = bsDaughters.at(i);
+            int absId = std::abs(daughter->pdgId());
+            if (absId == 411 || absId == 421 || absId == 431 || absId == 413) {
+                hasCharm = true;
+                break; // No need to continue if we found one
+            }
+        }
+        if (!hasCharm) continue;
         if(res > 2) res = 2;
 
-
-        // find if they are a Ds meson and X
-        const reco::GenParticle* ds;
-        if( std::abs(bsDaughters.at(0)->pdgId())==431){
-            ds = bsDaughters.at(0);
-        } else if( std::abs(bsDaughters.at(1)->pdgId())==431){
-            ds = bsDaughters.at(1);
-        } else continue;
+        // if there's at least 1 dstar meson
+        const reco::GenParticle* dstar;
+        bool hasDstar = false;
+        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
+            const auto& daughter = bsDaughters.at(i);
+            int absId = std::abs(daughter->pdgId());
+            if (absId == 413) {
+                hasDstar = true;
+                dstar = bsDaughters.at(i);
+                break; // No need to continue if we found one
+            }
+        }
+        if (!hasDstar || !dstar) continue;
         if(res > 1) res = 1;
 
-        // find if they are a D0 meson and X
-        const reco::GenParticle* d0;
-        if( std::abs(bsDaughters.at(0)->pdgId())==421){
-            d0 = bsDaughters.at(0);
-        } else if( std::abs(bsDaughters.at(1)->pdgId())==421){
-            d0 = bsDaughters.at(1);
+        // find the decay products of the D* meson
+        std::vector<const reco::GenParticle*> dstarDaughters;
+        for(unsigned int i=0; i < dstar->numberOfDaughters(); ++i){
+            dstarDaughters.push_back( &genParticles[dstar->daughterRef(i).key()] );
+        }
+
+        // find if they are a D0 meson and a pion
+        if( dstarDaughters.size()!=2 ) continue;
+        const reco::GenParticle* dzero;
+        if( std::abs(dstarDaughters.at(0)->pdgId())==421
+            && std::abs(dstarDaughters.at(1)->pdgId())==211 ){
+            dzero = dstarDaughters.at(0);
+        } else if( std::abs(dstarDaughters.at(0)->pdgId())==211
+            && std::abs(dstarDaughters.at(1)->pdgId())==421 ){
+            dzero = dstarDaughters.at(1);
         } else continue;
         if(res > -1) res = -1;
 
-        // find the decay products of the Ds meson
-        std::vector<const reco::GenParticle*> dsDaughters;
-        for(unsigned int i=0; i < ds->numberOfDaughters(); ++i){
-            dsDaughters.push_back( &genParticles[ds->daughterRef(i).key()] );
+        // find the daughters of the D0
+        std::vector<const reco::GenParticle*> dzeroDaughters;
+        for(unsigned int i=0; i < dzero->numberOfDaughters(); ++i){
+            dzeroDaughters.push_back( &genParticles[dzero->daughterRef(i).key()] );
         }
 
-        // find if they are a pion and a phi meson
-        if( dsDaughters.size()!=2 ) continue;
-        const reco::GenParticle* phi;
-        if( std::abs(dsDaughters.at(0)->pdgId())==333
-            && std::abs(dsDaughters.at(1)->pdgId())==211 ){
-            phi = dsDaughters.at(0);
-        } else if( std::abs(dsDaughters.at(0)->pdgId())==211
-            && std::abs(dsDaughters.at(1)->pdgId())==333 ){
-            phi = dsDaughters.at(1);
-        } else continue;
-        if(res > -2) res = -2;
-        
-
-        // find the daughters of the phi
-        std::vector<const reco::GenParticle*> phiDaughters;
-        for(unsigned int i=0; i < phi->numberOfDaughters(); ++i){
-            phiDaughters.push_back( &genParticles[phi->daughterRef(i).key()] );
-        }
-
-        // find if they are kaons
-        if( phiDaughters.size()!=2 ) continue;
-        if( std::abs(phiDaughters.at(0)->pdgId())==321
-            && std::abs(phiDaughters.at(1)->pdgId())==321 ){
+        // find if they are a kaon and a pion
+        if( dzeroDaughters.size()!=2 ) continue;
+        if( std::abs(dzeroDaughters.at(0)->pdgId())==321
+            && std::abs(dzeroDaughters.at(1)->pdgId())==211 ){
+            // pass
+        } else if( std::abs(dzeroDaughters.at(0)->pdgId())==211
+            && std::abs(dzeroDaughters.at(1)->pdgId())==321 ){
             // pass
         } else continue;
 
         // if all checks above succeeded,
-        // we have a genuine Bs -> Ds X -> phi pi -> K K pi event
-        if(res > -3) res = -3;
+        // we have a genuine D* -> D0 pi -> K pi pi event
+        if(res > -2) res = -2;
         break;
     }
     if(res > 4) res = 0;
     return res;
 }
-
 
 std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProducer::find_Bs_to_Ds(
         const std::vector<reco::GenParticle>& genParticles){
@@ -225,9 +225,9 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
     // loop over all hard scattering particles
     for( const reco::GenParticle* p : hardScatterParticles ){
 
-        // check if it is a Bs meson
+        // check if it is a B meson
         int pdgid = p->pdgId();
-        if(std::abs(pdgid) != 531) continue;
+        if( std::abs(pdgid) != 531 && std::abs(pdgid) != 521 && std::abs(pdgid) != 511 ) continue;
         const reco::GenParticle* bs = p;
 
         // find its daughters
@@ -241,56 +241,45 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
         //for( const reco::GenParticle* p: dsDaughters ){ std::cout << p->pdgId() << " "; }
         //std::cout << std::endl;
 
-        //find Ds
-        if( bsDaughters.size()!=2 ) continue;
-        const reco::GenParticle* ds;
-        const reco::GenParticle* X;
-        if( std::abs(bsDaughters.at(0)->pdgId())==431 ){
-            ds = bsDaughters.at(0);
-            X = bsDaughters.at(1);
-        } else if( std::abs(bsDaughters.at(1)->pdgId())==431 ){
-            ds = bsDaughters.at(1);
-            X = bsDaughters.at(0);
-        } else continue;
+        //find Dstar
+        //if( bsDaughters.size()!=2 ) continue;
+        const reco::GenParticle* dstar;
+        bool hasDstar = false;
+        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
+            const auto& daughter = bsDaughters.at(i);
+            int absId = std::abs(daughter->pdgId());
+            if (absId == 413) {
+                hasDstar = true;
+                dstar = bsDaughters.at(i);
+                break; // No need to continue if we found one
+            }
+        }
+        if (!hasDstar || !dstar) continue;
 
-        //find D0
-        const reco::GenParticle* d0;
-        const reco::GenParticle* X0;
-        if( std::abs(bsDaughters.at(0)->pdgId())==421 ){
-            d0 = bsDaughters.at(0);
-            X0 = bsDaughters.at(1);
-        } else if( std::abs(bsDaughters.at(1)->pdgId())==421 ){
-            d0 = bsDaughters.at(1);
-            X0 = bsDaughters.at(0);
-        } else continue;
-
-        // find the daughters of the Ds
-        std::vector<const reco::GenParticle*> dsDaughters;
-        for(unsigned int i=0; i<ds->numberOfDaughters(); ++i){
-            dsDaughters.push_back( &genParticles[ds->daughterRef(i).key()] );
+        // find the daughters of the Dstar
+        std::vector<const reco::GenParticle*> dstarDaughters;
+        for(unsigned int i=0; i < dstar->numberOfDaughters(); ++i){
+            dstarDaughters.push_back( &genParticles[dstar->daughterRef(i).key()] );
         }
 
-        // find the pion and phi
-        if( dsDaughters.size()!=2 ) continue;
+        // find the D0 meson and the pion
+        if( dstarDaughters.size()!=2 ) continue;
+        const reco::GenParticle* dzero;
         const reco::GenParticle* pi;
-        const reco::GenParticle* phi;
-        if( std::abs(dsDaughters.at(0)->pdgId())==333
-            && std::abs(dsDaughters.at(1)->pdgId())==211 ){
-            phi = dsDaughters.at(0);
-            pi = dsDaughters.at(1);
-        } else if( std::abs(dsDaughters.at(0)->pdgId())==211
-            && std::abs(dsDaughters.at(1)->pdgId())==333 ){
-            phi = dsDaughters.at(1);
-            pi = dsDaughters.at(0);
+        if( std::abs(dstarDaughters.at(0)->pdgId())==421
+            && std::abs(dstarDaughters.at(1)->pdgId())==211 ){
+            dzero = dstarDaughters.at(0);
+            pi = dstarDaughters.at(1);
+        } else if( std::abs(dstarDaughters.at(0)->pdgId())==211
+            && std::abs(dstarDaughters.at(1)->pdgId())==421 ){
+            dzero = dstarDaughters.at(1);
+            pi = dstarDaughters.at(0);
         } else continue;
 
-        // printouts
-        //std::cout << "  -> found Ds -> phi + pi" << std::endl;
-
-        // find the daughters of the phi
-        std::vector<const reco::GenParticle*> phiDaughters;
-        for(unsigned int i=0; i<phi->numberOfDaughters(); ++i){
-            phiDaughters.push_back( &genParticles[phi->daughterRef(i).key()] );
+        // find the daughters of the D0
+        std::vector<const reco::GenParticle*> dzeroDaughters;
+        for(unsigned int i=0; i<dzero->numberOfDaughters(); ++i){
+            dzeroDaughters.push_back( &genParticles[dzero->daughterRef(i).key()] );
         }
 
         // printouts
@@ -298,51 +287,28 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
         //for( const reco::GenParticle* p: phiDaughters ){ std::cout << p->pdgId() << " "; } 
         //std::cout << std::endl;
 
-        // find the kaons
-        const reco::GenParticle* K1;
-        const reco::GenParticle* K2;
-        const reco::GenParticle* KPlus;
-        const reco::GenParticle* KMinus;
-        if( phiDaughters.size()!=2 ) continue;
-        if( std::abs(phiDaughters.at(0)->pdgId())==321
-            && std::abs(phiDaughters.at(1)->pdgId())==321 ){
-            K1 = phiDaughters.at(0);
-            K2 = phiDaughters.at(1);
+        //find the kaon and the pion
+        const reco::GenParticle* K;
+        const reco::GenParticle* pi2;
+        if( dzeroDaughters.size()!=2 ) continue;
+        if( std::abs(dzeroDaughters.at(0)->pdgId())==321
+            && std::abs(dzeroDaughters.at(1)->pdgId())==211 ){
+            K = dzeroDaughters.at(0);
+            pi2 = dzeroDaughters.at(1);
+        } else if( std::abs(dzeroDaughters.at(0)->pdgId())==211
+            && std::abs(dzeroDaughters.at(1)->pdgId())==321 ){
+            K = dzeroDaughters.at(1);
+            pi2 = dzeroDaughters.at(0);
         } else continue;
-
-        // find which one is the positive and which one the negative
-        if( K1->charge() > 0 && K2->charge() < 0 ){
-            KPlus = K1; 
-            KMinus = K2;
-        }
-        else{
-            KPlus = K2;
-            KMinus = K1;
-        }
-
-        // print kinematics
-        /*std::cout << "Ds kinematics:" << std::endl;
-        std::cout << ds.pt() << " " << ds.eta() << " " << ds.phi() << std::endl;
-        std::cout << "pion kinematics:" << std::endl;
-        std::cout << pi->pt() << " " << pi->eta() << " " << pi->phi() << std::endl;
-        std::cout << "phi kinematics:" << std::endl;
-        std::cout << phi->pt() << " " << phi->eta() << " " << phi->phi() << std::endl;
-        std::cout << "kaon1 kinematics:" << std::endl;
-        std::cout << K1->pt() << " " << K1->eta() << " " << K1->phi() << std::endl;
-        std::cout << "kaon2 kinematics:" << std::endl;
-        std::cout << K2->pt() << " " << K2->eta() << " " << K2->phi() << std::endl;*/
 
         // set the particles in the output map
         std::map< std::string, const reco::GenParticle* > thisres = {
-            {"Ds", ds},
-            {"D0", d0},
+            {"DStar", dstar},
+            {"DZero", dzero},
             {"Bs", bs},
-            {"X", X},
-            {"X0", X0},
-            {"Phi", phi},
-            {"Pi", pi},
-            {"KPlus", KPlus},
-            {"KMinus", KMinus}
+            {"Pi1", pi},
+            {"Pi2", pi2},
+            {"K", K}
         };
         res.push_back(thisres);
     }
