@@ -180,6 +180,21 @@ def add_cfragmentation_producer(process, name='cFragmentation', dtype='mc'):
     outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
     outputmodule.outputCommands.append("keep *_cFragmentationProducer_*_*")
 
+def add_debugger(process, name='Dbugger', dtype='mc'):
+    process.Dbugger = cms.EDProducer("Dbugger",
+        name = cms.string(name),
+        dtype = cms.string(dtype),
+        genParticlesToken = cms.InputTag("prunedGenParticles"),
+        packedPFCandidatesToken = cms.InputTag("packedPFCandidates"),
+        lostTracksToken = cms.InputTag("lostTracks")
+    )
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.Dbugger
+    )
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.outputCommands.append("keep *_Dbugger_*_*")
+
 
 def hcnano_customize(process):
 
@@ -227,8 +242,16 @@ def hcnano_customize(process):
         add_dstar_gen_producer(process, dtype=dtype)
         add_dzero_gen_producer(process, dtype=dtype)
         add_cfragmentation_producer(process, dtype=dtype)
+<<<<<<< Updated upstream
         add_ds_producer(process, dtype=dtype)
         add_dstar_producer(process, dtype=dtype)
+=======
+    add_ds_producer(process, dtype=dtype)
+    add_dstar_producer(process, dtype=dtype)
+    
+    # temp: add debugger
+    #add_debugger(process, dtype=dtype)
+>>>>>>> Stashed changes
 
     # remove unneeded output
     # note: can give errors if the main table for a given object is dropped
