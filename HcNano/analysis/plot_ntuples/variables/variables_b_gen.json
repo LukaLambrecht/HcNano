@@ -1,0 +1,29 @@
+[
+{
+  "name": "GenBsMeson_Dstar_Pi1_pt",
+  "variable": "GenBsMeson_Pi1_pt",
+  "axtitle": "$p_{T}(\\pi_{1})$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 8.0,
+  "nbins": 50
+},
+{ 
+  "name": "GenBMeson_DStar_K_pt",
+  "variable": "GenBsMeson_K_pt",
+  "axtitle": "$p_{T}(K)$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 70.0,
+  "nbins": 50
+},
+{
+  "name": "GenBMeson_DStar_Pi2_pt",
+  "variable": "GenBsMeson_Pi2_pt",
+  "axtitle": "$p_{T}(\\pi_{2})$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 60.0,
+  "nbins": 50
+}
+]

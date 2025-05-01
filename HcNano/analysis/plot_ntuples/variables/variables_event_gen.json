@@ -43,5 +43,23 @@
   "xlow": -0.5,
   "xhigh": 3.5,
   "nbins": 4
+},
+{
+  "name": "nGenBMeson",
+  "variable": "nGenBsMeson",
+  "axtitle": "Number of gen-level B -> D* -> K pi pi per event",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 2.5,
+  "nbins": 6
+},
+{ 
+  "name": "GenBMesonDecayType",
+  "variable": "GenBsMesonDecayType",
+  "axtitle": "Gen-level B meson decay type",
+  "unit": "",
+  "xlow": -2.5,
+  "xhigh": 8.5,
+  "nbins": 11
 }
 ]
