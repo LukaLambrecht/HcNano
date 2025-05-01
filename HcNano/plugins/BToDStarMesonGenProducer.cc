@@ -1,13 +1,13 @@
 /*
-Custom analyzer class for investigating gen-level Bs meson decays.
+Custom analyzer class for investigating gen-level b-hadron to D* decays.
 */
 
 // local include files
-#include "PhysicsTools/HcNano/interface/BsMesonGenProducer.h"
+#include "PhysicsTools/HcNano/interface/BToDStarMesonGenProducer.h"
 
 
 // constructor //
-BsMesonGenProducer::BsMesonGenProducer(const edm::ParameterSet& iConfig)
+BToDStarMesonGenProducer::BToDStarMesonGenProducer(const edm::ParameterSet& iConfig)
   : name(iConfig.getParameter<std::string>("name")),
     genParticlesToken(consumes<reco::GenParticleCollection>(
         iConfig.getParameter<edm::InputTag>("genParticlesToken"))) {
@@ -17,10 +17,10 @@ BsMesonGenProducer::BsMesonGenProducer(const edm::ParameterSet& iConfig)
 }
 
 // destructor //
-BsMesonGenProducer::~BsMesonGenProducer(){}
+BToDStarMesonGenProducer::~BToDStarMesonGenProducer(){}
 
 // descriptions //
-void BsMesonGenProducer::fillDescriptions(edm::ConfigurationDescriptions &descriptions){
+void BToDStarMesonGenProducer::fillDescriptions(edm::ConfigurationDescriptions &descriptions){
     edm::ParameterSetDescription desc;
     desc.add<std::string>("name", "Name for output table");
     desc.add<edm::InputTag>("genParticlesToken", edm::InputTag("genParticlesToken"));
@@ -28,7 +28,7 @@ void BsMesonGenProducer::fillDescriptions(edm::ConfigurationDescriptions &descri
 }
 
 // produce (main method) //
-void BsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
+void BToDStarMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
 
     // get gen particles
     edm::Handle<std::vector<reco::GenParticle>> genParticles;
@@ -39,7 +39,7 @@ void BsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     }
 
     // find decay type
-    int BsGenDecayType = find_Bs_decay_type( *genParticles );
+    int BsGenDecayType = find_B_decay_type( *genParticles );
 
     // make the table
     auto decayTypeTable = std::make_unique<nanoaod::FlatTable>(1, name+"DecayType", true);
@@ -48,21 +48,21 @@ void BsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     // add the table to the output
     iEvent.put(std::move(decayTypeTable), name+"DecayType");
 
-    // find Bs -> Ds X
-    std::vector< std::map< std::string, const reco::GenParticle* > > BsGenParticles;
-    BsGenParticles = find_Bs_to_Ds( *genParticles );
+    // find B -> D* X, D* -> D0 pi, D0 -> K pi
+    std::vector< std::map< std::string, const reco::GenParticle* > > BGenParticles;
+    BGenParticles = find_B_to_DStar( *genParticles );
 
     // convert to format suitable for flat table
     std::map< std::string, std::vector<float> > variables;
-    std::vector<std::string> particleNames = {"Bs", "DStar", "DZero", "Pi1", "K", "Pi2"};
+    std::vector<std::string> particleNames = {"BHadron", "DStar", "DZero", "Pi1", "K", "Pi2"};
     for( const auto& particleName: particleNames ){
         std::vector<float> pt;
         std::vector<float> eta;
         std::vector<float> phi;
-        for(unsigned int idx=0; idx < BsGenParticles.size(); idx++){
-            pt.push_back(BsGenParticles[idx].at(particleName)->pt());
-            eta.push_back(BsGenParticles[idx].at(particleName)->eta());
-            phi.push_back(BsGenParticles[idx].at(particleName)->phi());
+        for(unsigned int idx=0; idx < BGenParticles.size(); idx++){
+            pt.push_back(BGenParticles[idx].at(particleName)->pt());
+            eta.push_back(BGenParticles[idx].at(particleName)->eta());
+            phi.push_back(BGenParticles[idx].at(particleName)->phi());
         }
         std::string ptName = particleName + "_pt";
         variables[ptName] = pt;
@@ -73,7 +73,7 @@ void BsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     }
 
     // make the table
-    auto table = std::make_unique<nanoaod::FlatTable>(BsGenParticles.size(), name, false);
+    auto table = std::make_unique<nanoaod::FlatTable>(BGenParticles.size(), name, false);
     for( const auto& pair : variables ){
         std::string name = pair.first;
         std::vector<float> values = pair.second;
@@ -84,17 +84,16 @@ void BsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     iEvent.put(std::move(table), name);
 }
 
-int BsMesonGenProducer::find_Bs_decay_type(
+int BToDStarMesonGenProducer::find_B_decay_type(
         const std::vector<reco::GenParticle>& genParticles){
-    // find what type of event this is concerning the production and decay of Bs mesons.
+    // find what type of event this is.
     // the numbering convention is as follows:
     // 0: undefined, none of the below.
-    //-2: at least one D* -> D0 pi -> K pi pi (i.e. the decay of interest).
-    //-1: at least one D* -> D0 pi, but excluding the above.
-    // 1: at least 1 D* meson
-    // 2: at least one charmed meson in B daughter particles (D0, Ds, D*, D+-)
-    // 3: at least one Bs, B0 or B+- (but now being commented out)
-    // 4: if there's B meson/baryon in hard scattering
+    // 1: at least one b-hadron -> D* X, D* -> D0 pi, D0 -> K pi (i.e. the decay of interest).
+    // 2: at least one b-hadron -> D* X, D* -> D0 pi, D0 -> other than above.
+    // 3: at least one b-hadron -> D* X, D* -> other than above.
+    // 4: at least one b-hadron -> c-meson (D0, Ds, D*, D+-), but excluding the above.
+    // 5: at least one b-hadron in hard scattering, but excluding the above.
     
     // find all gen particles from the hard scattering
     // (implemented here as having a proton as their mother)
@@ -113,53 +112,45 @@ int BsMesonGenProducer::find_Bs_decay_type(
     // loop over hard scattering particles
     for( const reco::GenParticle* p : hardScatterParticles ){
 
-        // check if it is a bottom meson/hadron
+        // check if it is a b-hadron
         int pdgid = p->pdgId();
         bool bMeson = (std::abs(pdgid) > 500 && std::abs(pdgid) < 600);
         bool bBaryon = (std::abs(pdgid) > 5000 && std::abs(pdgid) < 6000);
         if( !(bMeson || bBaryon) ) continue;
-        if(res > 4) res = 4;
+        if(res > 5) res = 5;
+        const reco::GenParticle* bHadron = p;
 
-        // check if it is a Bs, B0 or B+- meson
-        // now, not requiring it to be any specific B meson, so now the largest res value is 3
-        // if( std::abs(pdgid) != 531 && std::abs(pdgid) != 521 && std::abs(pdgid) != 511 ) continue;
-        const reco::GenParticle* bs = p;
-        if(res > 3) res = 3;
-
-        // find the decay products of the B mesons
-        std::vector<const reco::GenParticle*> bsDaughters;
-        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
-            bsDaughters.push_back( &genParticles[bs->daughterRef(i).key()] );
+        // find the decay products of the b hadron
+        std::vector<const reco::GenParticle*> bHadronDaughters;
+        for(unsigned int i=0; i < bHadron->numberOfDaughters(); ++i){
+            bHadronDaughters.push_back( &genParticles[bHadron->daughterRef(i).key()] );
         }
         
-        // check if there's at least 1 charmed meson in b daughters particles
+        // check if there is at least 1 charmed meson in b-hadron daughters particles
         bool hasCharm = false;
-        // const reco::GenParticle* bMeson = p;
-        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
-            const auto& daughter = bsDaughters.at(i);
+        for(const reco::GenParticle* daughter: bHadronDaughters){
             int absId = std::abs(daughter->pdgId());
-            if (absId == 411 || absId == 421 || absId == 431 || absId == 413) {
+            if( absId == 411 || absId == 421 || absId == 431 || absId == 413 ){
                 hasCharm = true;
                 break; // No need to continue if we found one
             }
         }
         if (!hasCharm) continue;
-        if(res > 2) res = 2;
+        if(res > 4) res = 4;
 
-        // if there's at least 1 dstar meson
+        // check if there is at least 1 D* meson
         const reco::GenParticle* dstar;
         bool hasDstar = false;
-        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
-            const auto& daughter = bsDaughters.at(i);
+        for(const reco::GenParticle* daughter: bHadronDaughters){
             int absId = std::abs(daughter->pdgId());
             if (absId == 413) {
                 hasDstar = true;
-                dstar = bsDaughters.at(i);
+                dstar = daughter;
                 break; // No need to continue if we found one
             }
         }
         if (!hasDstar || !dstar) continue;
-        if(res > 1) res = 1;
+        if(res > 3) res = 3;
 
         // find the decay products of the D* meson
         std::vector<const reco::GenParticle*> dstarDaughters;
@@ -177,7 +168,7 @@ int BsMesonGenProducer::find_Bs_decay_type(
             && std::abs(dstarDaughters.at(1)->pdgId())==421 ){
             dzero = dstarDaughters.at(1);
         } else continue;
-        if(res > -1) res = -1;
+        if(res > 2) res = 2;
 
         // find the daughters of the D0
         std::vector<const reco::GenParticle*> dzeroDaughters;
@@ -196,17 +187,18 @@ int BsMesonGenProducer::find_Bs_decay_type(
         } else continue;
 
         // if all checks above succeeded,
-        // we have a genuine D* -> D0 pi -> K pi pi event
-        if(res > -2) res = -2;
+        // we have a genuine b-hadron -> D* X, D* -> D0 pi, D0 -> K pi event
+        if(res > 1) res = 1;
         break;
     }
-    if(res > 4) res = 0;
+    if(res > 5) res = 0;
     return res;
 }
 
-std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProducer::find_Bs_to_Ds(
+
+std::vector< std::map< std::string, const reco::GenParticle* > > BToDStarMesonGenProducer::find_B_to_DStar(
         const std::vector<reco::GenParticle>& genParticles){
-    // find Bs -> Ds X -> phi pi -> K K pi at GEN level
+    // find b-hadron -> Ds X, Ds -> D0 pi, D0 -> K pi at GEN level
 
     // initialize output
     std::vector< std::map< std::string, const reco::GenParticle* > > res;
@@ -225,32 +217,27 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
     // loop over all hard scattering particles
     for( const reco::GenParticle* p : hardScatterParticles ){
 
-        // check if it is a B meson
+        // check if it is a b-hadron
         int pdgid = p->pdgId();
-        if( std::abs(pdgid) != 531 && std::abs(pdgid) != 521 && std::abs(pdgid) != 511 ) continue;
-        const reco::GenParticle* bs = p;
+        bool bMeson = (std::abs(pdgid) > 500 && std::abs(pdgid) < 600);
+        bool bBaryon = (std::abs(pdgid) > 5000 && std::abs(pdgid) < 6000);
+        if( !(bMeson || bBaryon) ) continue;
+        const reco::GenParticle* bHadron = p;
 
-        // find its daughters
-        std::vector<const reco::GenParticle*> bsDaughters;
-        for(unsigned int i=0; i<bs->numberOfDaughters(); ++i){
-                bsDaughters.push_back( &genParticles[bs->daughterRef(i).key()] );
+        // find the decay products of the b hadron
+        std::vector<const reco::GenParticle*> bHadronDaughters;
+        for(unsigned int i=0; i < bHadron->numberOfDaughters(); ++i){
+            bHadronDaughters.push_back( &genParticles[bHadron->daughterRef(i).key()] );
         }
-    
-        // printouts
-        //std::cout << "ds daughters:" << std::endl;
-        //for( const reco::GenParticle* p: dsDaughters ){ std::cout << p->pdgId() << " "; }
-        //std::cout << std::endl;
 
-        //find Dstar
-        //if( bsDaughters.size()!=2 ) continue;
+        // find the Dstar
         const reco::GenParticle* dstar;
         bool hasDstar = false;
-        for(unsigned int i=0; i < bs->numberOfDaughters(); ++i){
-            const auto& daughter = bsDaughters.at(i);
+        for(const reco::GenParticle* daughter: bHadronDaughters){
             int absId = std::abs(daughter->pdgId());
             if (absId == 413) {
                 hasDstar = true;
-                dstar = bsDaughters.at(i);
+                dstar = daughter;
                 break; // No need to continue if we found one
             }
         }
@@ -282,12 +269,7 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
             dzeroDaughters.push_back( &genParticles[dzero->daughterRef(i).key()] );
         }
 
-        // printouts
-        //std::cout << "phi daughters" << std::endl;
-        //for( const reco::GenParticle* p: phiDaughters ){ std::cout << p->pdgId() << " "; } 
-        //std::cout << std::endl;
-
-        //find the kaon and the pion
+        // find the kaon and the pion
         const reco::GenParticle* K;
         const reco::GenParticle* pi2;
         if( dzeroDaughters.size()!=2 ) continue;
@@ -303,9 +285,9 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
 
         // set the particles in the output map
         std::map< std::string, const reco::GenParticle* > thisres = {
+            {"BHadron", bHadron},
             {"DStar", dstar},
             {"DZero", dzero},
-            {"Bs", bs},
             {"Pi1", pi},
             {"Pi2", pi2},
             {"K", K}
@@ -316,4 +298,4 @@ std::vector< std::map< std::string, const reco::GenParticle* > > BsMesonGenProdu
 }
 
 // define this as a plug-in
-DEFINE_FWK_MODULE(BsMesonGenProducer);
+DEFINE_FWK_MODULE(BToDStarMesonGenProducer);

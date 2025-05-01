@@ -1,9 +1,9 @@
 /*
-Custom analyzer class for investigating gen-level D* meson decays.
+Custom analyzer class for investigating gen-level b-hadron to D* meson decays.
 */
 
-#ifndef BsMesonGenProducer_H
-#define BsMesonGenProducer_H
+#ifndef BToDStarMesonGenProducer_H
+#define BToDStarMesonGenProducer_H
 
 // system include files
 #include <memory>
@@ -31,7 +31,7 @@ Custom analyzer class for investigating gen-level D* meson decays.
 #include "PhysicsTools/HcNano/interface/GenTools.h"
 
 
-class BsMesonGenProducer : public edm::stream::EDProducer<> {
+class BToDStarMesonGenProducer : public edm::stream::EDProducer<> {
   private:
 
     // attributes and variables
@@ -45,13 +45,13 @@ class BsMesonGenProducer : public edm::stream::EDProducer<> {
 
   public:
     // constructor, destructor, and other meta-functions
-    explicit BsMesonGenProducer(const edm::ParameterSet&);
-    ~BsMesonGenProducer() override;
+    explicit BToDStarMesonGenProducer(const edm::ParameterSet&);
+    ~BToDStarMesonGenProducer() override;
     static void fillDescriptions(edm::ConfigurationDescriptions&);
 
     // helper functions
-    static int find_Bs_decay_type(const std::vector<reco::GenParticle>&);
-    static std::vector< std::map< std::string, const reco::GenParticle* > > find_Bs_to_Ds(
+    static int find_B_decay_type(const std::vector<reco::GenParticle>&);
+    static std::vector< std::map< std::string, const reco::GenParticle* > > find_B_to_DStar(
       const std::vector<reco::GenParticle>&);
 };
 
