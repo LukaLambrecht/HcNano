@@ -116,7 +116,8 @@ void Dbugger::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
         double twotracksepx = std::abs(tr1refpoint.x()-tr2refpoint.x());
         double twotracksepy = std::abs(tr1refpoint.y()-tr2refpoint.y());
         double twotracksepz = std::abs(tr1refpoint.z()-tr2refpoint.z());
-        if( twotracksepx>0.1 || twotracksepy>0.1 || twotracksepz>0.1 ) continue;
+        if( std::sqrt(std::pow(twotracksepx, 2) + std::pow(twotracksepy, 2)) > 0.1 ) continue;
+        if( twotracksepz>0.1 ) continue;
 
         if(tr1.charge() * tr2.charge() > 0) ssCounter2++;
         else osCounter2++;
@@ -186,7 +187,8 @@ void Dbugger::produce(edm::Event& iEvent, const edm::EventSetup& iSetup){
             double trackvtxsepx = std::abs(tr3refpoint.x()-phivtx.position().x());
             double trackvtxsepy = std::abs(tr3refpoint.y()-phivtx.position().y());
             double trackvtxsepz = std::abs(tr3refpoint.z()-phivtx.position().z());
-            if( trackvtxsepx>0.1 || trackvtxsepy>0.1 || trackvtxsepz>0.1 ) continue;
+            if( std::sqrt(std::pow(trackvtxsepx, 2) + std::pow(trackvtxsepy, 2)) > 0.1 ) continue;
+            if( trackvtxsepz>0.1 ) continue;
 
             if(tr1.charge() * tr2.charge() > 0) ssCounter6++;
             else osCounter6++;

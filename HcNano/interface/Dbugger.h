@@ -6,6 +6,7 @@ Custom analyzer class for debugging (temp)
 #define Dbugger_H
 
 // system include files
+#include <cmath>
 #include <memory>
 #include <unordered_map>
 
