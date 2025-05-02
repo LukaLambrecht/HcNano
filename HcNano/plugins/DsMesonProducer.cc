@@ -50,11 +50,13 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<std::vector<reco::GenParticle>> genParticles;
     iEvent.getByToken(genParticlesToken, genParticles);
     std::vector< std::map< std::string, const reco::GenParticle* > > DsGenParticles;
+    std::vector< std::map< std::string, const reco::GenParticle* > > allDsGenParticles;
     bool doMatching = (dtype=="mc") ? true : false;
     if( !genParticles.isValid() ) doMatching = false;
     if( doMatching ){
-        DsGenParticles = DsMesonGenProducer::find_Ds_to_PhiPi_to_KKPi( *genParticles );
-        if( DsGenParticles.size()==0 ) doMatching = false;
+        DsGenParticles = DsMesonGenProducer::find_Ds_to_PhiPi_to_KKPi( *genParticles, true );
+        allDsGenParticles = DsMesonGenProducer::find_Ds_to_PhiPi_to_KKPi( *genParticles, false );
+        if( allDsGenParticles.size()==0 ) doMatching = false;
     }
 
     // declare output variables
@@ -91,6 +93,7 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::vector<float> DsMeson_tr3phi_sepz;
     std::vector<bool> DsMeson_hasFastGenMatch;
     std::vector<bool> DsMeson_hasFastPartialGenMatch;
+    std::vector<bool> DsMeson_hasFastNonHardScatterGenMatch;
 
     // merge packed candidate tracks and lost tracks
     std::vector<reco::Track> allTracks;
@@ -253,6 +256,7 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             // check if this candidate can be matched to gen-level
             bool hasFastGenMatch = false;
             bool hasFastPartialGenMatch = false;
+            bool hasFastNonHardScatterGenMatch = false;
             if( doMatching ){
                 for( const auto& pmap : DsGenParticles){
                     double dRThreshold = 0.05;
@@ -267,9 +271,18 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                         hasFastPartialGenMatch = true;
                     }
                 }
+                for( const auto& pmap : allDsGenParticles){
+                    double dRThreshold = 0.05;
+                    if( GenTools::isGeometricTrackMatch( tr3, *pmap.at("Pi"), dRThreshold )
+                        && GenTools::isGeometricTrackMatch( postrack, *pmap.at("KPlus"), dRThreshold )
+                        && GenTools::isGeometricTrackMatch( negtrack, *pmap.at("KMinus"), dRThreshold ) ){
+                        hasFastNonHardScatterGenMatch = true;
+                    }
+                }
             }
             DsMeson_hasFastGenMatch.push_back( hasFastGenMatch );
             DsMeson_hasFastPartialGenMatch.push_back( hasFastPartialGenMatch );
+            DsMeson_hasFastNonHardScatterGenMatch.push_back( hasFastNonHardScatterGenMatch );
 
             // break loop over third track in case maximum number was reached
             if( DsMeson_mass.size() == nDsMeson_max ) break;
@@ -316,6 +329,7 @@ void DsMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     table->addColumn<float>("tr3phi_sepz", DsMeson_tr3phi_sepz, "");
     table->addColumn<bool>("hasFastGenmatch", DsMeson_hasFastGenMatch, "");
     table->addColumn<bool>("hasFastPartialGenmatch", DsMeson_hasFastPartialGenMatch, "");
+    table->addColumn<bool>("hasFastNonHardScatterGenmatch", DsMeson_hasFastNonHardScatterGenMatch, "");
 
     // add the table to the output
     iEvent.put(std::move(table), name);

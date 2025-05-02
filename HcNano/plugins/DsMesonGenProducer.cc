@@ -50,7 +50,7 @@ void DsMesonGenProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 
     // find Ds -> phi pi -> K K pi
     std::vector< std::map< std::string, const reco::GenParticle* > > DsGenParticles;
-    DsGenParticles = find_Ds_to_PhiPi_to_KKPi( *genParticles );
+    DsGenParticles = find_Ds_to_PhiPi_to_KKPi( *genParticles, true );
 
     // convert to format suitable for flat table
     std::map< std::string, std::vector<float> > variables;
@@ -165,7 +165,8 @@ int DsMesonGenProducer::find_Ds_decay_type(
 
 
 std::vector< std::map< std::string, const reco::GenParticle* > > DsMesonGenProducer::find_Ds_to_PhiPi_to_KKPi(
-        const std::vector<reco::GenParticle>& genParticles){
+        const std::vector<reco::GenParticle>& genParticles,
+        const bool onlyFromHardScatter){
     // find Ds -> phi pi -> K K pi at GEN level
 
     // initialize output
@@ -176,8 +177,10 @@ std::vector< std::map< std::string, const reco::GenParticle* > > DsMesonGenProdu
     std::vector<const reco::GenParticle*> hardScatterParticles;
     for( const reco::GenParticle& p : genParticles ){
         if( !p.isLastCopy() ) continue;
-        int mompdgid = GenTools::getMotherPdgId(p, genParticles);
-        if( std::abs(mompdgid)!=2212 ) continue;
+        if( onlyFromHardScatter ){
+            int mompdgid = GenTools::getMotherPdgId(p, genParticles);
+            if( std::abs(mompdgid)!=2212 ) continue;
+        }
         hardScatterParticles.push_back(&p);
     }
     if( hardScatterParticles.size() < 1 ) return res;

@@ -237,13 +237,13 @@ def hcnano_customize(process):
 
     # add custom producers
     if dtype=='mc':
-        #add_ds_gen_producer(process, dtype=dtype)
-        #add_dstar_gen_producer(process, dtype=dtype)
+        add_ds_gen_producer(process, dtype=dtype)
+        add_dstar_gen_producer(process, dtype=dtype)
         #add_dzero_gen_producer(process, dtype=dtype)
         #add_cfragmentation_producer(process, dtype=dtype)
-        add_btodstar_gen_producer(process, dtype=dtype) # temp for investigating H+b sample
-    #add_ds_producer(process, dtype=dtype)
-    #add_dstar_producer(process, dtype=dtype)
+        #add_btodstar_gen_producer(process, dtype=dtype) # temp for investigating H+b sample
+    add_ds_producer(process, dtype=dtype)
+    add_dstar_producer(process, dtype=dtype)
     
     # temp: add debugger
     #add_debugger(process, dtype=dtype)

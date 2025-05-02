@@ -52,7 +52,7 @@ class DsMesonGenProducer : public edm::stream::EDProducer<> {
     // helper functions
     static int find_Ds_decay_type(const std::vector<reco::GenParticle>&);
     static std::vector< std::map< std::string, const reco::GenParticle* > > find_Ds_to_PhiPi_to_KKPi(
-      const std::vector<reco::GenParticle>&);
+      const std::vector<reco::GenParticle>&, const bool);
 };
 
 #endif

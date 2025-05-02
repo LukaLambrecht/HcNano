@@ -52,7 +52,7 @@ class DStarMesonGenProducer : public edm::stream::EDProducer<> {
     // helper functions
     static int find_DStar_decay_type(const std::vector<reco::GenParticle>&);
     static std::vector< std::map< std::string, const reco::GenParticle* > > find_DStar_to_DZeroPi_to_KPiPi(
-      const std::vector<reco::GenParticle>&);
+      const std::vector<reco::GenParticle>&, const bool);
 };
 
 #endif
