@@ -93,7 +93,7 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     std::vector<float> DStarMeson_tr3d0_sepz;
     std::vector<bool> DStarMeson_hasFastGenMatch;
     std::vector<bool> DStarMeson_hasFastPartialGenMatch;
-    std::vector<bool> DStarMeson_hasFastNonHardScatterGenMatch;
+    std::vector<bool> DStarMeson_hasFastAllOriginGenMatch;
 
     // merge packed candidate tracks and lost tracks
     std::vector<reco::Track> allTracks;
@@ -281,7 +281,7 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
             // check if this candidate can be matched to gen-level
             bool hasFastGenMatch = false;
             bool hasFastPartialGenMatch = false;
-            bool hasFastNonHardScatterGenMatch = false;
+            bool hasFastAllOriginGenMatch = false;
             if( doMatching ){
                 for( const auto& pmap : DStarGenParticles){
                     double dRThreshold = 0.05;
@@ -307,13 +307,13 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
                               && GenTools::isGeometricTrackMatch( negtrack, *pmap.at("Pi2"), dRThreshold ) )
                              || (GenTools::isGeometricTrackMatch( postrack, *pmap.at("Pi2"), dRThreshold )
                               && GenTools::isGeometricTrackMatch( negtrack, *pmap.at("K"), dRThreshold ) ) ) ){
-                        hasFastNonHardScatterGenMatch = true;
+                        hasFastAllOriginGenMatch = true;
                     }
                 }
             }
             DStarMeson_hasFastGenMatch.push_back( hasFastGenMatch );
             DStarMeson_hasFastPartialGenMatch.push_back( hasFastPartialGenMatch );
-            DStarMeson_hasFastNonHardScatterGenMatch.push_back( hasFastNonHardScatterGenMatch );
+            DStarMeson_hasFastAllOriginGenMatch.push_back( hasFastAllOriginGenMatch );
 
             // break loop over third track in case maximum number was reached
             if( DStarMeson_mass.size() == nDStarMeson_max ) break;
@@ -360,7 +360,7 @@ void DStarMesonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
     table->addColumn<float>("tr3d0_sepz", DStarMeson_tr3d0_sepz, "");
     table->addColumn<bool>("hasFastGenmatch", DStarMeson_hasFastGenMatch, "");
     table->addColumn<bool>("hasFastPartialGenmatch", DStarMeson_hasFastPartialGenMatch, "");
-    table->addColumn<bool>("hasFastNonHardScatterGenmatch", DStarMeson_hasFastNonHardScatterGenMatch, "");
+    table->addColumn<bool>("hasFastAllOriginGenmatch", DStarMeson_hasFastAllOriginGenMatch, "");
 
     // add the table to the output
     iEvent.put(std::move(table), name);
