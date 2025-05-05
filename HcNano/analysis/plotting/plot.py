@@ -183,7 +183,7 @@ def plot(sig=None, bkg=None, data=None,
         # if number of labels is large, put legend outside the axes
         bbox_to_anchor = None
         loc = None
-        if len(hists) > 5:
+        if len(hists) > 6:
             loc = 'upper left'
             bbox_to_anchor = (1., 1.)
         ax.legend(loc=loc, bbox_to_anchor=bbox_to_anchor, fontsize=10)

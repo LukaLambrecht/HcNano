@@ -23,10 +23,6 @@ if __name__=='__main__':
     parser.add_argument('-i', '--inputfiles', required=True, nargs='+')
     parser.add_argument('-v', '--variables', required=True)
     parser.add_argument('-o', '--outputdir', required=True)
-    parser.add_argument('--genmatchbranch', default=None)
-    parser.add_argument('--chargebranch1', default=None)
-    parser.add_argument('--chargebranch2', default=None)
-    parser.add_argument('--weighted', default=False, action='store_true')
     parser.add_argument('--donormalized', default=False, action='store_true')
     parser.add_argument('--dolog', default=False, action='store_true')
     parser.add_argument('--extracmstext', default=None)
@@ -36,20 +32,23 @@ if __name__=='__main__':
     parser.add_argument('--entry_stop', default=None)
     args = parser.parse_args()
 
+    # hard-coded arguments
+    args.chargebranch1 = 'DStarMeson_Pi2_charge'
+    args.chargebranch2 = 'DStarMeson_K_charge'
+    genmatchbranches = ([
+      'DStarMeson_hasFastGenmatch',
+      'DStarMeson_hasFastNonHardScatterGenmatch'
+    ])
+
     # read variables
     variables = read_variables(args.variables)
     variablelist = [v.variable for v in variables]
 
     # set branches to read
     branches_to_read = variablelist
-    if args.genmatchbranch is not None:
-        branches_to_read.append(args.genmatchbranch)
-    if args.chargebranch1 is not None:
-        branches_to_read.append(args.chargebranch1)
-    if args.chargebranch2 is not None:
-        branches_to_read.append(args.chargebranch2)
-    if args.weighted:
-        raise Exception('Not yet implemented.')
+    branches_to_read += genmatchbranches
+    branches_to_read.append(args.chargebranch1)
+    branches_to_read.append(args.chargebranch2)
 
     # read the input file
     events = {}
@@ -68,56 +67,71 @@ if __name__=='__main__':
     new_events = {}
     for key, sample in events.items():
         new_sample = {}
-        #print("Available fields in sample:", sample.fields)
-        #print(sample.type)
         for variable in sample.fields:
             new_sample[variable] = ak.flatten(sample[variable], axis=None)
         new_sample = ak.Array(new_sample)
         new_events[key] = new_sample
     events = new_events
     
-    # make masks
-    mask_genmatch = None
-    if args.genmatchbranch is not None:
-        mask_genmatch = events[dummykey][args.genmatchbranch].to_numpy().astype(bool)
-    mask_os = np.ones(len(events[dummykey]))
-    if args.chargebranch1 is not None and args.chargebranch2 is not None:
-        charge1 = events[dummykey][args.chargebranch1].to_numpy().astype(int)
-        charge2 = events[dummykey][args.chargebranch2].to_numpy().astype(int)
-        mask_os = (charge1*charge2 < 0)
+    # make masks for opposite sign and same sign candidates
+    charge1 = events[dummykey][args.chargebranch1].to_numpy().astype(int)
+    charge2 = events[dummykey][args.chargebranch2].to_numpy().astype(int)
+    mask_os = (charge1*charge2 < 0)
+    mask_ss = (~mask_os)
+    mask_pp = ((mask_ss) & (charge1>0))
+    mask_nn = ((mask_ss) & (charge1<0))
+
+    # make masks for gen-match categories
+    mask_genmatch = events[dummykey]['DStarMeson_hasFastGenmatch'].to_numpy().astype(bool)
+    mask_allgenmatch = events[dummykey]['DStarMeson_hasFastNonHardScatterGenmatch'].to_numpy().astype(bool)
+    mask_nonhardscattergenmatch = ((mask_allgenmatch) & (~mask_genmatch))
 
     # split events into categories
-    if mask_genmatch is not None:
-        events_matched = events[dummykey][((mask_genmatch) & (mask_os))]
-        events_notmatched = events[dummykey][((~mask_genmatch) & (mask_os))]
-        events = {}
-        events['notmatched'] = events_notmatched
-        events['matched'] = events_matched
+    events_matched = events[dummykey][((mask_genmatch) & (mask_os))]
+    events_matched_nonhardscatter = events[dummykey][((mask_nonhardscattergenmatch) & (mask_os))]
+    events_notmatched_os = events[dummykey][((~mask_allgenmatch) & (mask_os))]
+    events_notmatched_ss = events[dummykey][((~mask_allgenmatch) & (mask_ss))]
+    events_notmatched_pp = events[dummykey][((~mask_allgenmatch) & (mask_pp))]
+    events_notmatched_nn = events[dummykey][((~mask_allgenmatch) & (mask_nn))]
+    events = {}
+    events['notmatched-os'] = events_notmatched_os
+    #events['matched-nhs'] = events_matched_nonhardscatter
+    #events['matched'] = events_matched
+    events['notmatched-pp'] = events_notmatched_pp
+    events['notmatched-nn'] = events_notmatched_nn
+    events['notmatched-ss'] = events_notmatched_ss
         
-        # print the counts
-        print(f"Total events: {len(events_matched) + len(events_notmatched)}")
-        print(f"Matched events: {len(events_matched)}")
-        print(f"Not matched events: {len(events_notmatched)}")
-
     # set colors
     colordict = {
         dummykey: 'dodgerblue',
         'matched': 'darkorchid',
-        'notmatched': 'dodgerblue'
+        'matched-nhs': 'orchid',
+        'notmatched-os': 'dodgerblue',
+        'notmatched-ss': 'red',
+        'notmatched-pp': 'gold',
+        'notmatched-nn': 'forestgreen'
     }
 
     # set labels
     labeldict = {
         dummykey: 'All events',
         'matched': 'Gen-matched',
-        'notmatched': 'Not gen-matched'
+        'matched-nhs': 'Gen-matched (not from proton)',
+        'notmatched-os': 'Not gen-matched',
+        'notmatched-ss': 'SS',
+        'notmatched-pp': 'SS (++)',
+        'notmatched-nn': 'SS (--)'
     }
 
     # set styles
     styledict = {
-        dummykey: 'step',
-        'matched': 'step',
-        'notmatched': 'fill'
+        dummykey: 'fill',
+        'matched': 'fill',
+        'matched-nhs': 'fill',
+        'notmatched-os': 'fill',
+        'notmatched-ss': 'step',
+        'notmatched-pp': 'step',
+        'notmatched-nn': 'step'
     }
 
     # make output directory
@@ -133,8 +147,6 @@ if __name__=='__main__':
         for key, sample in events.items():
             values = sample[variable.variable].to_numpy().astype(float)
             weights = None
-            if args.weighted:
-                raise Exception('Not yet implemented.')
             hists[key] = make_hist(values, variable, weights=weights)
 
         # loop over plot options
@@ -147,7 +159,7 @@ if __name__=='__main__':
           for logscale in log:
 
             # define how to stack histograms
-            stacklist = list(events.keys())
+            stacklist = ['matched', 'matched-nhs', 'notmatched-os']
             if normalize: stacklist = None
 
             # make plot
