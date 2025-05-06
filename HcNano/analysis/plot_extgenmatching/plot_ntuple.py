@@ -37,7 +37,7 @@ if __name__=='__main__':
     args.chargebranch2 = 'DStarMeson_K_charge'
     genmatchbranches = ([
       'DStarMeson_hasFastGenmatch',
-      'DStarMeson_hasFastNonHardScatterGenmatch'
+      'DStarMeson_hasFastAllOriginGenmatch'
     ])
 
     # read variables
@@ -83,7 +83,7 @@ if __name__=='__main__':
 
     # make masks for gen-match categories
     mask_genmatch = events[dummykey]['DStarMeson_hasFastGenmatch'].to_numpy().astype(bool)
-    mask_allgenmatch = events[dummykey]['DStarMeson_hasFastNonHardScatterGenmatch'].to_numpy().astype(bool)
+    mask_allgenmatch = events[dummykey]['DStarMeson_hasFastAllOriginGenmatch'].to_numpy().astype(bool)
     mask_nonhardscattergenmatch = ((mask_allgenmatch) & (~mask_genmatch))
 
     # split events into categories

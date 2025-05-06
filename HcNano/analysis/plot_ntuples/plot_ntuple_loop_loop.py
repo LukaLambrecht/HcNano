@@ -8,19 +8,19 @@ if __name__=='__main__':
     ntuples = [
       {
         'file': '/eos/user/l/llambrec/hcanalysis_nanoaod_2022_test/HPlusCharm_4FS_MuRFScaleDynX0p50_HTo2G_M-125_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_Run3Summer22EEMiniAODv4-130X_mcRun3_2022_realistic_postEE_v6-v2/output_batch*.root',
-        'xsec': 0.00009013 * 1000, # cross-section for 2018 H->4l sample, see ntuplizer
+        'xsec': 0.02474, # cross-section for 2018 H->4l sample, see slides
         'lumi': 61.75,
         'outputdir': 'output_test_Hc'
       },
       {
         'file': '/eos/user/l/llambrec/hcanalysis_nanoaod_2022_test/HPlusBottom_5FS_MuRFScaleDynX0p50_HTo2G_M-125_TuneCP5_13p6TeV_amcatnloFXFX-pythia8_Run3Summer22EEMiniAODv4-130X_mcRun3_2022_realistic_postEE_v6-v2/output_batch*.root',
-        'xsec': 0.0006654 * 1000, # cross-section for 2018 H->4l sample, see ntuplizer
+        'xsec': 0.1827, # cross-section for 2018 H->4l sample, see slides
         'lumi': 61.75,
         'outputdir': 'output_test_Hb'
       },
       {
         'file': '/eos/user/l/llambrec/hcanalysis_nanoaod_2022_test/GluGluHtoZZto4L_M-125_TuneCP5_13p6TeV_powheg2-JHUGenV752-pythia8_Run3Summer22EEMiniAODv4-130X_mcRun3_2022_realistic_postEE_v6-v2/output.root',
-        'xsec': 0.01334 * 1000, # cross-section for 2018 H->4l sample, see ntuplizer
+        'xsec': 13.34, # cross-section for 2018 H->4l sample, see slides
         'lumi': 61.75,
         'outputdir': 'output_test_ggH'
       }
