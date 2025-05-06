@@ -27,6 +27,8 @@ if __name__=='__main__':
     parser.add_argument('--chargebranch1', default=None)
     parser.add_argument('--chargebranch2', default=None)
     parser.add_argument('--weighted', default=False, action='store_true')
+    parser.add_argument('--xsec', default=0, type=float)
+    parser.add_argument('--lumi', default=0, type=float)
     parser.add_argument('--donormalized', default=False, action='store_true')
     parser.add_argument('--dolog', default=False, action='store_true')
     parser.add_argument('--extracmstext', default=None)
@@ -49,7 +51,7 @@ if __name__=='__main__':
     if args.chargebranch2 is not None:
         branches_to_read.append(args.chargebranch2)
     if args.weighted:
-        raise Exception('Not yet implemented.')
+        branches_to_read.append('genWeight')
 
     # read the input file
     events = {}
@@ -64,14 +66,35 @@ if __name__=='__main__':
                           entry_start=args.entry_start,
                           entry_stop=args.entry_stop)
 
+    # for weighted events, make the weights
+    weights = None
+    if args.weighted:
+        runs = read_sampledict(sampledict,
+                 mode='uproot',
+                 treename='Runs',
+                 branches=['genEventSumw'],
+                 verbose=False)
+        sumweights = runs[dummykey]['genEventSumw']
+        sumweights = np.sum(sumweights)
+        norm = args.xsec * args.lumi / sumweights
+        weights = events[dummykey]['genWeight'] * norm
+        # convert per-event weights to per-candidate weights
+        # by first broadcasting and then flattening
+        # (note: this assumes all variables have the same nested structure)
+        dummyvar = variablelist[0]
+        dummyvalues = events[dummykey][dummyvar]
+        weights = ak.broadcast_arrays(weights, dummyvalues)[0]
+        weights = ak.flatten(weights, axis=None).to_numpy()
+
     # flatten all variables
     new_events = {}
     for key, sample in events.items():
         new_sample = {}
-        #print("Available fields in sample:", sample.fields)
-        #print(sample.type)
         for variable in sample.fields:
+            if variable == 'genWeight': continue
             new_sample[variable] = ak.flatten(sample[variable], axis=None)
+        # add weights
+        if args.weighted: new_sample['weight'] = weights
         new_sample = ak.Array(new_sample)
         new_events[key] = new_sample
     events = new_events
@@ -133,8 +156,7 @@ if __name__=='__main__':
         for key, sample in events.items():
             values = sample[variable.variable].to_numpy().astype(float)
             weights = None
-            if args.weighted:
-                raise Exception('Not yet implemented.')
+            if args.weighted: weights = sample['weight'].to_numpy().astype(float)
             hists[key] = make_hist(values, variable, weights=weights)
 
         # loop over plot options
