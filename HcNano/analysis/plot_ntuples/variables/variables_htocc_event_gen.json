@@ -1,0 +1,38 @@
+[
+{
+  "name": "GenHToDsMesonDecayType",
+  "variable": "GenHToDsMesonDecayType",
+  "axtitle": "Gen-level $H \\rightarrow D_{s}$ decay type",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 10.5,
+  "nbins": 11
+},
+{
+  "name": "nGenHToDsMeson",
+  "variable": "nGenHToDsMeson",
+  "axtitle": "Number of gen-level $H \\rightarrow D_{s} \\rightarrow K K pi$ per event",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 2.5,
+  "nbins": 3
+},
+{ 
+  "name": "GenHToDStarMesonDecayType",
+  "variable": "GenHToDStarMesonDecayType",
+  "axtitle": "Gen-level $H \\rightarrow D*$ decay type",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 10.5,
+  "nbins": 11
+},
+{
+  "name": "nGenHToDStarMeson",
+  "variable": "nGenHToDStarMeson",
+  "axtitle": "Number of gen-level $H \\rightarrow D* \\rightarrow K pi pi$ per event",
+  "unit": "",
+  "xlow": -0.5,
+  "xhigh": 3.5,
+  "nbins": 4
+}
+]

@@ -35,6 +35,69 @@ int GenTools::getMotherPdgId(
     return mom->pdgId();
 }
 
+std::vector<reco::GenParticle> GenTools::getQuarkDaughters(
+        const reco::GenParticle& quark,
+        const std::vector<reco::GenParticle>& genParticles){
+    std::vector<reco::GenParticle> res;
+    int quarkPdgId = quark.pdgId();
+    
+    // loop over daughters
+    for(unsigned int i=0; i < quark.numberOfDaughters(); ++i){
+        const reco::GenParticle daughter = genParticles[quark.daughterRef(i).key()];
+        int daughterPdgId = daughter.pdgId();
+        
+        // if original quark is not last copy,
+        // only look for the next copy and go recursively
+        // (skipping all potential other daughters)
+        if( !quark.isLastCopy() ){
+            if( daughterPdgId != quarkPdgId ) continue;
+            for(const reco::GenParticle& d : getQuarkDaughters(daughter, genParticles)){
+                res.push_back(d);
+            }
+        }
+
+        // if original quark is last copy, add all daughters
+        // note: sometimes it seems there are still copies making it to this stage,
+        // so need to add an extra check to skip them explicitly.
+        else{
+            bool duplicate = false;
+            for(const reco::GenParticle& check : res){
+                if( daughter.pdgId()==check.pdgId()
+                    && GenTools::isGeometricGenParticleMatch(daughter, check, 0.05) ){
+                    duplicate = true;
+                }
+            }
+            if( !duplicate ) res.push_back(daughter);
+        }
+    }
+    return res;
+}
+
+std::vector<reco::GenParticle> GenTools::getQuarkPairDaughters(
+        const reco::GenParticle& quark1,
+        const reco::GenParticle& quark2,
+        const std::vector<reco::GenParticle>& genParticles){
+    // get daughters of a quark-antiquark pair.
+    // the issue is that sometimes the daughters of both quarks
+    // are stored for each of both quarks (and sometimes not),
+    // so need to remove duplicates.
+
+    std::vector<reco::GenParticle> res;
+    for(const reco::GenParticle& d : getQuarkDaughters(quark1, genParticles)){
+        res.push_back(d);
+    }
+    for(const reco::GenParticle& d : getQuarkDaughters(quark2, genParticles)){
+        bool duplicate = false;
+        for(const reco::GenParticle& check : res){
+            if( d.pdgId()==check.pdgId() && GenTools::isGeometricGenParticleMatch(d, check, 0.05) ){
+                duplicate = true;
+            }
+        }
+        if( !duplicate ) res.push_back(d);
+    }
+    return res;
+}
+
 bool GenTools::considerForMatching(
         const reco::Candidate& reco,
         const reco::GenParticle& gen,
@@ -116,7 +179,7 @@ const bool GenTools::isGeometricGenParticleMatch(
         const reco::GenParticle& gp1,
         const reco::GenParticle& gp2,
         double deltaRThreshold ){
-    // decide whether a given track matches a given gen particle
+    // decide whether a given gen particle matches another gen particle
     ROOT::Math::PtEtaPhiMVector gp1vec( gp1.pt(), gp1.eta(), gp1.phi(), 0.0 );
     ROOT::Math::PtEtaPhiMVector gp2vec( gp2.pt(), gp2.eta(), gp2.phi(), 0.0 );
     double deltaR = ROOT::Math::VectorUtil::DeltaR( gp1vec, gp2vec );

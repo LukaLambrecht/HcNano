@@ -25,6 +25,15 @@ namespace GenTools{
     const reco::GenParticle* getMother(const reco::GenParticle&, const std::vector<reco::GenParticle>&);
     int getMotherPdgId(const reco::GenParticle&, const std::vector<reco::GenParticle>&);
 
+    // find daughter particles
+    std::vector<reco::GenParticle> getQuarkDaughters(
+        const reco::GenParticle&,
+        const std::vector<reco::GenParticle>&);
+    std::vector<reco::GenParticle> getQuarkPairDaughters(
+        const reco::GenParticle&,
+        const reco::GenParticle&,
+        const std::vector<reco::GenParticle>&);
+
     // geometric matching
     const reco::GenParticle* geometricMatch(
         const reco::Candidate& reco,

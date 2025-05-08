@@ -1,0 +1,29 @@
+[
+{
+  "name": "GenHToDsMeson_Pi_pt",
+  "variable": "GenHToDsMeson_Pi_pt",
+  "axtitle": "Pion $p_{T}$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 20.0,
+  "nbins": 30
+},
+{ 
+  "name": "GenHToDsMeson_KPlus_pt",
+  "variable": "GenHToDsMeson_KPlus_pt",
+  "axtitle": "$K^{+}$ $p_{T}$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 10.0,
+  "nbins": 30
+},
+{ 
+  "name": "GenHToDsMeson_KMinus_pt",
+  "variable": "GenHToDsMeson_KMinus_pt",
+  "axtitle": "$K^{-}$ $p_{T}$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 10.0,
+  "nbins": 30
+}
+]

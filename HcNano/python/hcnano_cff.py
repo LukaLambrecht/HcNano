@@ -180,6 +180,60 @@ def add_btodstar_gen_producer(process, name='GenBHadron', dtype='mc'):
     outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
     outputmodule.outputCommands.append("keep *_BToDStarMesonGenProducer_*_*")
 
+def add_htodstar_gen_producer(process, name='GenHToDStarMeson', dtype='mc'):
+    process.HToDStarMesonGenProducer = cms.EDProducer("HToDStarMesonGenProducer",
+        name = cms.string(name),
+        genParticlesToken = cms.InputTag("prunedGenParticles")
+    )
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.HToDStarMesonGenProducer
+    )
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.outputCommands.append("keep *_HToDStarMesonGenProducer_*_*")
+
+def add_htodstar_producer(process, name='HToDStarMeson', dtype='mc'):
+    process.HToDStarMesonProducer = cms.EDProducer("HToDStarMesonProducer",
+        name = cms.string(name),
+        dtype = cms.string(dtype),
+        genParticlesToken = cms.InputTag("prunedGenParticles"),
+        packedPFCandidatesToken = cms.InputTag("packedPFCandidates"),
+        lostTracksToken = cms.InputTag("lostTracks")
+    )
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.HToDStarMesonProducer
+    )
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.outputCommands.append("keep *_HToDStarMesonProducer_*_*")
+
+def add_htods_gen_producer(process, name='GenHToDsMeson', dtype='mc'):
+    process.HToDsMesonGenProducer = cms.EDProducer("HToDsMesonGenProducer",
+        name = cms.string(name),
+        genParticlesToken = cms.InputTag("prunedGenParticles")
+    )
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.HToDsMesonGenProducer
+    )
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.outputCommands.append("keep *_HToDsMesonGenProducer_*_*")
+
+def add_htods_producer(process, name='HToDsMeson', dtype='mc'):
+    process.HToDsMesonProducer = cms.EDProducer("HToDsMesonProducer",
+        name = cms.string(name),
+        dtype = cms.string(dtype),
+        genParticlesToken = cms.InputTag("prunedGenParticles"),
+        packedPFCandidatesToken = cms.InputTag("packedPFCandidates"),
+        lostTracksToken = cms.InputTag("lostTracks")
+    )
+    process.nanoAOD_step = cms.Path(
+      process.nanoAOD_step._seq
+      * process.HToDsMesonProducer
+    )
+    outputmodule = process.NANOAODSIMoutput if dtype=='mc' else process.NANOAODoutput
+    outputmodule.outputCommands.append("keep *_HToDsMesonProducer_*_*")
+
 def add_debugger(process, name='Dbugger', dtype='mc'):
     process.Dbugger = cms.EDProducer("Dbugger",
         name = cms.string(name),
@@ -237,13 +291,17 @@ def hcnano_customize(process):
 
     # add custom producers
     if dtype=='mc':
-        add_ds_gen_producer(process, dtype=dtype)
-        add_dstar_gen_producer(process, dtype=dtype)
+        #add_ds_gen_producer(process, dtype=dtype)
+        #add_dstar_gen_producer(process, dtype=dtype)
         #add_dzero_gen_producer(process, dtype=dtype)
         #add_cfragmentation_producer(process, dtype=dtype)
         #add_btodstar_gen_producer(process, dtype=dtype) # temp for investigating H+b sample
-    add_ds_producer(process, dtype=dtype)
-    add_dstar_producer(process, dtype=dtype)
+        add_htodstar_gen_producer(process, dtype=dtype) # temp for investigating alternative signal
+        add_htods_gen_producer(process, dtype=dtype) # temp for investigating alternative signal
+    #add_ds_producer(process, dtype=dtype)
+    #add_dstar_producer(process, dtype=dtype)
+    add_htodstar_producer(process, dtype=dtype) # temp for investigating alternative signal
+    add_htods_producer(process, dtype=dtype) # temp for investigating alternative signal
     
     # temp: add debugger
     #add_debugger(process, dtype=dtype)

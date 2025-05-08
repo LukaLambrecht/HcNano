@@ -1,0 +1,29 @@
+[
+{
+  "name": "HToDsMeson_mass",
+  "variable": "HToDsMeson_mass",
+  "axtitle": "Reconstructed $m(D_{s})$",
+  "unit": "GeV",
+  "xlow": 1.86,
+  "xhigh": 2.07,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_PhiMeson_mass",
+  "variable": "HToDsMeson_PhiMeson_mass",
+  "axtitle": "Reconstructed $m(\\phi)$",
+  "unit": "GeV",
+  "xlow": 0.98,
+  "xhigh": 1.09,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_PhiMeson_massDiff",
+  "variable": "HToDsMeson_PhiMeson_massDiff",
+  "axtitle": "Reconstructed $m(D_{s}) - m(\\phi)$",
+  "unit": "GeV",
+  "xlow": 0.75,
+  "xhigh": 1.1,
+  "nbins": 50
+}
+]

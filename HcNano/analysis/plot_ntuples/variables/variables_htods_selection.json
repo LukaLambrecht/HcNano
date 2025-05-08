@@ -1,0 +1,164 @@
+[
+{
+  "name": "HToDsMeson_mass",
+  "variable": "HToDsMeson_mass",
+  "axtitle": "Reconstructed $m(D_{s})$",
+  "unit": "GeV",
+  "xlow": 1.86,
+  "xhigh": 2.07,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_KPlus_charge",
+  "variable": "HToDsMeson_KPlus_charge",
+  "axtitle": "K+ charge",
+  "unit": "",
+  "xlow": -3,
+  "xhigh": 3,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_KMinus_charge",
+  "variable": "HToDsMeson_KMinus_charge",
+  "axtitle": "K- charge",
+  "unit": "",
+  "xlow": -3,
+  "xhigh": 3,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_PhiMeson_mass",
+  "variable": "HToDsMeson_PhiMeson_mass",
+  "axtitle": "Reconstructed $m(\\phi)$",
+  "unit": "GeV",
+  "xlow": 0.98,
+  "xhigh": 1.09,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_PhiMeson_massDiff",
+  "variable": "HToDsMeson_PhiMeson_massDiff",
+  "axtitle": "Reconstructed $m(D_{s}) - m(\\phi)$",
+  "unit": "GeV",
+  "xlow": 0.75,
+  "xhigh": 1.1,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_Pi_pt",
+  "variable": "HToDsMeson_Pi_pt",
+  "axtitle": "$p_{T}(\\pi)$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 10.0,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_KPlus_pt",
+  "variable": "HToDsMeson_KPlus_pt",
+  "axtitle": "$p_{T}(K^{+})$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_KMinus_pt",
+  "variable": "HToDsMeson_KMinus_pt",
+  "axtitle": "$p_{T}(K^{-})$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr1tr2_deltaR",
+  "variable": "HToDsMeson_tr1tr2_deltaR",
+  "axtitle": "$\\Delta$ R (track 1, track 2)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.4,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr3phi_deltaR",
+  "variable": "HToDsMeson_tr3phi_deltaR",
+  "axtitle": "$\\Delta$ R (track 3, $\\phi$)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.4,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_phivtx_normchi2",
+  "variable": "HToDsMeson_phivtx_normchi2",
+  "axtitle": "$\\phi$-vertex normalized $\\chi^2$",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_dsvtx_normchi2",
+  "variable": "HToDsMeson_dsvtx_normchi2",
+  "axtitle": "$D_{s}$-vertex normalized $\\chi^2$",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr1tr2_sepx",
+  "variable": "HToDsMeson_tr1tr2_sepx",
+  "axtitle": "$\\Delta x$ (track 1, track 2)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.04,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr1tr2_sepy",
+  "variable": "HToDsMeson_tr1tr2_sepy",
+  "axtitle": "$\\Delta y$ (track 1, track 2)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.04,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr1tr2_sepz",
+  "variable": "HToDsMeson_tr1tr2_sepz",
+  "axtitle": "$\\Delta z$ (track 1, track 2)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.1,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr3phi_sepx",
+  "variable": "HToDsMeson_tr3phi_sepx",
+  "axtitle": "$\\Delta x$ (track 3, $\\phi$)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.1,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr3phi_sepy",
+  "variable": "HToDsMeson_tr3phi_sepy",
+  "axtitle": "$\\Delta y$ (track 3, $\\phi$)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.1,
+  "nbins": 50
+},
+{
+  "name": "HToDsMeson_tr3phi_sepz",
+  "variable": "HToDsMeson_tr3phi_sepz",
+  "axtitle": "$\\Delta z$ (track 3, $\\phi$)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.1,
+  "nbins": 50
+}
+]

@@ -1,0 +1,146 @@
+[
+{
+  "name": "HToDStarMeson_mass",
+  "variable": "HToDStarMeson_mass",
+  "axtitle": "Reconstructed $m(D*)$",
+  "unit": "GeV",
+  "xlow": 1.97,
+  "xhigh": 2.07,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_DZeroMeson_mass",
+  "variable": "HToDStarMeson_DZeroMeson_mass",
+  "axtitle": "Reconstructed $m(D^{0})$",
+  "unit": "GeV",
+  "xlow": 1.83,
+  "xhigh": 1.9,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_DZeroMeson_massDiff",
+  "variable": "HToDStarMeson_DZeroMeson_massDiff",
+  "axtitle": "Reconstructed $m(D*)$ - $m(D^{0})$",
+  "unit": "GeV",
+  "xlow": 0.14,
+  "xhigh": 0.24,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_Pi1_pt",
+  "variable": "HToDStarMeson_Pi1_pt",
+  "axtitle": "$p_{T}(\\pi_{1})$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_K_pt",
+  "variable": "HToDStarMeson_K_pt",
+  "axtitle": "$p_{T}(K)$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 20.0,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_Pi2_pt",
+  "variable": "HToDStarMeson_Pi2_pt",
+  "axtitle": "$p_{T}(\\pi_{2})$",
+  "unit": "GeV",
+  "xlow": 0.0,
+  "xhigh": 20.0,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr1tr2_deltaR",
+  "variable": "HToDStarMeson_tr1tr2_deltaR",
+  "axtitle": "$\\Delta$ R (track 1, track 2)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.4,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr3d0_deltaR",
+  "variable": "HToDStarMeson_tr3d0_deltaR",
+  "axtitle": "$\\Delta$ R (track 3, $D^{0}$)",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 0.4,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_d0vtx_normchi2",
+  "variable": "HToDStarMeson_d0vtx_normchi2",
+  "axtitle": "$D^{0}$-vertex normalized $\\chi^2$",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_dstarvtx_normchi2",
+  "variable": "HToDStarMeson_dstarvtx_normchi2",
+  "axtitle": "$D_{s}$-vertex normalized $\\chi^2$",
+  "unit": "",
+  "xlow": 0.0,
+  "xhigh": 5.0,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr1tr2_sepx",
+  "variable": "HToDStarMeson_tr1tr2_sepx",
+  "axtitle": "$\\Delta x$ (track 1, track 2)",
+  "unit": "cm",
+  "xlow": 0.0,
+  "xhigh": 0.015,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr1tr2_sepy",
+  "variable": "HToDStarMeson_tr1tr2_sepy",
+  "axtitle": "$\\Delta y$ (track 1, track 2)",
+  "unit": "cm",
+  "xlow": 0.0,
+  "xhigh": 0.015,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr1tr2_sepz",
+  "variable": "HToDStarMeson_tr1tr2_sepz",
+  "axtitle": "$\\Delta z$ (track 1, track 2)",
+  "unit": "cm",
+  "xlow": 0.0,
+  "xhigh": 0.1,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr3d0_sepx",
+  "variable": "HToDStarMeson_tr3d0_sepx",
+  "axtitle": "$\\Delta x$ (track 3, $D^{0}$)",
+  "unit": "cm",
+  "xlow": 0.0,
+  "xhigh": 0.05,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr3d0_sepy",
+  "variable": "HToDStarMeson_tr3d0_sepy",
+  "axtitle": "$\\Delta y$ (track 3, $D^{0}$)",
+  "unit": "cm",
+  "xlow": 0.0,
+  "xhigh": 0.05,
+  "nbins": 50
+},
+{
+  "name": "HToDStarMeson_tr3d0_sepz",
+  "variable": "HToDStarMeson_tr3d0_sepz",
+  "axtitle": "$\\Delta z$ (track 3, $D^{0}$)",
+  "unit": "cm",
+  "xlow": 0.0,
+  "xhigh": 0.1,
+  "nbins": 50
+}
+]
